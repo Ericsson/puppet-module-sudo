@@ -1,3 +1,7 @@
+# == Class: sudo
+#
+# Module to manage sudoers and sudo package
+#
 class sudo (
   $package           = 'sudo',
   $package_source    = undef,
@@ -5,6 +9,7 @@ class sudo (
   $package_manage    = 'true',
   $config_dir        = '/etc/sudoers.d',
   $config_dir_group  = 'root',
+  $config_dir_ensure = 'present',
   $config_dir_purge  = 'true',
   $sudoers           = undef,
   $sudoers_manage    = 'false',
@@ -23,11 +28,11 @@ class sudo (
 
   if $package_manage_real == true {
     package { 'sudo-package':
-       ensure => $package_ensure,
-       name   => $package,
-       source => $package_source,
-      }
+      ensure => $package_ensure,
+      name   => $package,
+      source => $package_source,
     }
+  }
 
   if $sudoers_manage_real == true {
     if type($config_dir_purge) == 'string' {
@@ -36,12 +41,12 @@ class sudo (
       $config_dir_purge_real = $config_dir_purge
     }
     file { $config_dir:
-      ensure => $dir_ensure,
-      owner => 'root',
-      group => $config_dir_group,
-      mode => '0550',
+      ensure  => $config_dir_ensure,
+      owner   => 'root',
+      group   => $config_dir_group,
+      mode    => '0550',
       recurse => $config_dir_purge_real,
-      purge => $config_dir_purge_real,
+      purge   => $config_dir_purge_real,
     }
 
     # Only works with sudo >= 1.7.2
