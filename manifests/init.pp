@@ -15,6 +15,12 @@ class sudo (
   } else {
     $package_manage_rael = $package_manage
   }
+  if type($sudoers_manage) == 'string' {
+    $sudoers_manage_real = str2bool($sudoers_manage)
+  } else {
+    $sudoers_manage_real = $sudoers_manage
+  }
+
   if $package_manage_real == true {
     package { 'sudo-package':
        ensure => $package_ensure,
@@ -23,12 +29,7 @@ class sudo (
       }
     }
 
-  if type($sudoers_manage) == 'string' {
-    $sudoers_manage_real = str2bool($sudoers_manage)
-  } else {
-    $sudoers_manage_real = $sudoers_manage
-  }
-  if $sudoers_manage == true {
+  if $sudoers_manage_real == true {
     if type($config_dir_purge) == 'string' {
       $config_dir_purge_real = str2bool($config_dir_purge)
     } else {
@@ -45,7 +46,7 @@ class sudo (
 
     # Only works with sudo >= 1.7.2
     if $sudoers != undef {
-      create_resources('sudo::conf',$sudoers)
+      create_resources('sudo::fragment',$sudoers)
     }
   }
 }
