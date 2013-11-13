@@ -12,15 +12,17 @@ describe 'sudo' do
       end
     end
     context 'with specifying package parameters' do
-      let(:params) { {:package        => 'foo',
-                      :package_ensure => 'absent',
-                      :package_source => '/file',
+      let(:params) { {:package           => 'foo',
+                      :package_ensure    => 'absent',
+                      :package_source    => '/file',
+                      :package_adminfile => '/adminfile',
         } }
       it do
         should contain_package('sudo-package').with({
           'ensure' => 'absent',
           'name'   => 'foo',
           'source' => '/file',
+          'adminfile' => '/adminfile',
         })
       end
     end
