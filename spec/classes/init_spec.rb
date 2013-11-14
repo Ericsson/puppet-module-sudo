@@ -7,6 +7,7 @@ describe 'sudo' do
         'name' => 'sudo',
       })
       should_not contain_file('/etc/sudoers.d')
+      should_not contain_file('/etc/sudoers')
     end
   end
 
@@ -21,7 +22,11 @@ describe 'sudo' do
                     :config_dir_purge  => 'false',
                     :sudoers_manage    => 'true',
                     :sudoers           => { 'root' => { 'content' => 'root ALL=(ALL) ALL' }, 'webusers' => { 'priority' => '20', 'source' => 'puppet:///files/webusers' } },
-      } }
+                    :config_file       => '/sudoers/file',
+                    :config_file_group => 'group',
+                    :config_file_owner => 'owner',
+                    :config_file_mode  => '1555',
+    } }
     it do
       should contain_package('sudo-package').with({
         'ensure' => 'absent',
@@ -53,6 +58,11 @@ describe 'sudo' do
         'mode'    => '0440',
         'source'  => 'puppet:///files/webusers',
       })
+      should contain_file('/sudoers/file').with({
+        'owner'   => 'owner',
+        'group'   => 'group',
+        'mode'    => '1555',
+      })
     end
   end
 
@@ -64,6 +74,7 @@ describe 'sudo' do
         'name' => 'sudo',
       })
       should_not contain_file('/etc/sudoers.d')
+      should_not contain_file('/etc/sudoers')
       should_not contain_file('10_root')
       should_not contain_file('20_webusers')
     end
@@ -102,6 +113,11 @@ describe 'sudo' do
         'mode'    => '0440',
         'source'  => 'puppet:///files/webusers',
       })
+      should contain_file('/etc/sudoers').with({
+        'owner'   => 'root',
+        'group'   => 'root',
+        'mode'    => '0440',
+      })
     end
   end
 
@@ -125,6 +141,12 @@ describe 'sudo' do
   end
   context 'with specifying config_dir set to invalid value' do
     let(:params) { {:config_dir  => 'invalidpath' } }
+    it do
+       expect { should }.to raise_error
+    end
+  end
+  context 'with specifying config_file param set to invalid value' do
+    let(:params) { {:config_file  => 'invalidpath' } }
     it do
        expect { should }.to raise_error
     end

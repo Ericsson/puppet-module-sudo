@@ -14,6 +14,10 @@ class sudo (
   $config_dir_purge  = 'true',
   $sudoers           = undef,
   $sudoers_manage    = 'false',
+  $config_file       = '/etc/sudoers',
+  $config_file_group = 'root',
+  $config_file_owner = 'root',
+  $config_file_mode  = '0440',
 ) {
 
   if type($package_manage) == 'string' {
@@ -37,6 +41,7 @@ class sudo (
   validate_bool($sudoers_manage_real)
   validate_bool($config_dir_purge_real)
   validate_absolute_path($config_dir)
+  validate_absolute_path($config_file)
   if $package_adminfile != undef {
     validate_absolute_path($package_adminfile)
   }
@@ -51,6 +56,11 @@ class sudo (
   }
 
   if $sudoers_manage_real == true {
+    file { $config_file:
+      owner => $config_file_owner,
+      group => $config_file_group,
+      mode  => $config_file_mode,
+    }
     file { $config_dir:
       ensure  => $config_dir_ensure,
       owner   => 'root',

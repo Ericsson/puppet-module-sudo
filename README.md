@@ -63,6 +63,30 @@ sudoers
 
 - *Default*: undef
 
+sudoers_manage
+--------------
+- *Default*: 'false'
+
+config_file
+-----------
+
+- *Default*: '/etc/sudoers',
+
+config_file_group
+-----------------
+
+- *Default*: 'root'
+
+config_file_owner
+-----------------
+
+- *Default*: 'root'
+
+config_file_mode
+-----------------
+
+- *Default*: '0440'
+
 ## sudo::fragment parameters
 
 enusure
