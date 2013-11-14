@@ -37,6 +37,9 @@ class sudo (
   validate_bool($sudoers_manage_real)
   validate_bool($config_dir_purge_real)
   validate_absolute_path($config_dir)
+  if $package_adminfile != undef {
+    validate_absolute_path($package_adminfile)
+  }
 
   if $package_manage_real == true {
     package { 'sudo-package':

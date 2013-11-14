@@ -3,9 +3,12 @@ puppet-module-sudo
 
 Manage sudo package and configuration files in /etc/sudoers.d/
 
+[![Build Status](https://api.travis-ci.org/Ericsson/puppet-module-sudo.png?branch=master)](https://travis-ci.org/Ericsson/puppet-module-sudo)
+
+
 # Requirements #
 
-Only works with sudo >= 1.7.2 due to includedir is not implemented in eariler versions
+Must have at least version 1.7.2 of sudo, which is where `includedir` was introduced.
 
 # Parameters #
 
