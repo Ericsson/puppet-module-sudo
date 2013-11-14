@@ -104,7 +104,7 @@ Mode of $config_file
 
 ## sudo::fragment parameters
 
-enusure
+ensure
 -------
 Ensure attribute of the file created in $config_dir
 
