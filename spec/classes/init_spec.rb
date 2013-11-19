@@ -4,20 +4,33 @@ describe 'sudo' do
     it do
       should contain_package('sudo-package').with({
         'ensure' => 'present',
-        'name' => 'sudo',
+        'name'   => 'sudo',
       })
-      should_not contain_file('/etc/sudoers.d')
-      should_not contain_file('/etc/sudoers')
+      should contain_file('/etc/sudoers.d').with({
+        'ensure'  => 'present',
+        'owner'   => 'root',
+        'group'   => 'root',
+        'mode'    => '0750',
+        'recurse' => 'true',
+        'purge'   => 'true',
+      })
+      should contain_file('/etc/sudoers').with({
+        'owner'   => 'root',
+        'group'   => 'root',
+        'mode'    => '0440',
+      })
     end
   end
 
-  context 'with specifying package and config_dir parameters with sudoers hash' do
+  context 'with all options set and manage all resources' do
     let(:params) { {:package           => 'package',
                     :package_ensure    => 'absent',
                     :package_source    => '/file',
                     :package_adminfile => '/adminfile',
+                    :package_manage    => 'true',
                     :config_dir        => '/folder',
                     :config_dir_ensure => 'absent',
+                    :config_dir_mode   => '0550',
                     :config_dir_group  => 'bar',
                     :config_dir_purge  => 'false',
                     :sudoers_manage    => 'true',
@@ -29,9 +42,9 @@ describe 'sudo' do
     } }
     it do
       should contain_package('sudo-package').with({
-        'ensure' => 'absent',
-        'name'   => 'package',
-        'source' => '/file',
+        'ensure'    => 'absent',
+        'name'      => 'package',
+        'source'    => '/file',
         'adminfile' => '/adminfile',
       })
       should contain_file('/folder').with({
@@ -66,58 +79,49 @@ describe 'sudo' do
     end
   end
 
-  context 'with default options and specifying sudoers hash' do
-    let(:params) { {:sudoers  => { 'root' => { 'content' => 'root ALL=(ALL) ALL' }, 'webusers' => { 'priority' => '20', 'source' => 'puppet:///files/webusers' } } } }
+  context 'with default options and package_manage false' do
+    let(:params) { {:package_manage  => 'false' } }
     it do
-      should contain_package('sudo-package').with({
-        'ensure' => 'present',
-        'name' => 'sudo',
-      })
-      should_not contain_file('/etc/sudoers.d')
-      should_not contain_file('/etc/sudoers')
-      should_not contain_file('10_root')
-      should_not contain_file('20_webusers')
-    end
-  end
-
-  context 'with specifying sudoers_manage true and sudoers hash' do
-    let(:params) { {:sudoers        => { 'root' => { 'content' => 'root ALL=(ALL) ALL' }, 'webusers' => { 'priority' => '20', 'source' => 'puppet:///files/webusers' } },
-                    :sudoers_manage => 'true',
-    } }
-    it do
-      should contain_package('sudo-package').with({
-        'ensure' => 'present',
-        'name' => 'sudo',
-      })
       should contain_file('/etc/sudoers.d').with({
         'ensure'  => 'present',
         'owner'   => 'root',
         'group'   => 'root',
-        'mode'    => '0550',
+        'mode'    => '0750',
         'recurse' => 'true',
         'purge'   => 'true',
-      })
-      should contain_file('10_root').with({
-        'ensure'  => 'present',
-        'path'    => '/etc/sudoers.d/10_root',
-        'owner'   => 'root',
-        'group'   => 'root',
-        'mode'    => '0440',
-        'content' => 'root ALL=(ALL) ALL',
-      })
-      should contain_file('20_webusers').with({
-        'ensure'  => 'present',
-        'path'    => '/etc/sudoers.d/20_webusers',
-        'owner'   => 'root',
-        'group'   => 'root',
-        'mode'    => '0440',
-        'source'  => 'puppet:///files/webusers',
       })
       should contain_file('/etc/sudoers').with({
         'owner'   => 'root',
         'group'   => 'root',
         'mode'    => '0440',
       })
+      should_not contain_package('sudo-package')
+    end
+  end
+
+  context 'with default options and sudoers_manage false' do
+    let(:params) { {:sudoers_manage  => 'false' } }
+    it do
+      should contain_package('sudo-package').with({
+        'ensure' => 'present',
+        'name'   => 'sudo',
+      })
+      should_not contain_file('/etc/sudoers.d')
+      should_not contain_file('/etc/sudoers')
+    end
+  end
+
+  context 'with sudoers_manage and package_manage false and with sudoers hash' do
+    let(:params) { {:sudoers         => { 'root' => { 'content' => 'root ALL=(ALL) ALL' }, 'webusers' => { 'priority' => '20', 'source' => 'puppet:///files/webusers' } },
+                    :sudoers_manage  => 'false',
+                    :package_manage  => 'false',
+    } }
+    it do
+      should_not contain_package('sudo-package')
+      should_not contain_file('/etc/sudoers.d')
+      should_not contain_file('/etc/sudoers')
+      should_not contain_file('10_root')
+      should_not contain_file('20_webusers')
     end
   end
 

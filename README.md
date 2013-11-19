@@ -54,6 +54,12 @@ Group attribute of $config_dir
 
 - *Default*: 'root'
 
+config_dir_mode
+---------------
+Mode attribute of $config_dir
+
+- *Default*: '0750'
+
 config_dir_ensure
 -----------------
 Ensure attribute of $config_dir
@@ -76,7 +82,7 @@ sudoers_manage
 --------------
 Manage $config_file file and files under $config_dir. Accepts string and boolean.
 
-- *Default*: 'false'
+- *Default*: 'true'
 
 config_file
 -----------

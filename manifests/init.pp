@@ -10,10 +10,11 @@ class sudo (
   $package_adminfile = undef,
   $config_dir        = '/etc/sudoers.d',
   $config_dir_group  = 'root',
+  $config_dir_mode   = '0750',
   $config_dir_ensure = 'present',
   $config_dir_purge  = 'true',
   $sudoers           = undef,
-  $sudoers_manage    = 'false',
+  $sudoers_manage    = 'true',
   $config_file       = '/etc/sudoers',
   $config_file_group = 'root',
   $config_file_owner = 'root',
@@ -45,9 +46,6 @@ class sudo (
   if $package_adminfile != undef {
     validate_absolute_path($package_adminfile)
   }
-  if $sudoers != undef {
-    validate_hash($sudoers)
-  }
 
   if $package_manage_real == true {
     package { 'sudo-package':
@@ -68,13 +66,14 @@ class sudo (
       ensure  => $config_dir_ensure,
       owner   => 'root',
       group   => $config_dir_group,
-      mode    => '0550',
+      mode    => $config_dir_mode,
       recurse => $config_dir_purge_real,
       purge   => $config_dir_purge_real,
     }
 
     # Only works with sudo >= 1.7.2
     if $sudoers != undef {
+      validate_hash($sudoers)
       create_resources('sudo::fragment',$sudoers)
     }
   }
