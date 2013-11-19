@@ -45,6 +45,9 @@ class sudo (
   if $package_adminfile != undef {
     validate_absolute_path($package_adminfile)
   }
+  if $sudoers != undef {
+    validate_hash($sudoers)
+  }
 
   if $package_manage_real == true {
     package { 'sudo-package':

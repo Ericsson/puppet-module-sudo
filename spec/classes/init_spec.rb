@@ -124,37 +124,43 @@ describe 'sudo' do
   context 'with specifying package_manage param set to invalid value' do
     let(:params) { {:package_manage  => [ true ] } }
     it do
-       expect { should }.to raise_error
+       expect { should }.to raise_error(Puppet::Error,/is not a boolean/)
     end
   end
   context 'with specifying sudoers_manage param set to invalid value' do
     let(:params) { {:sudoers_manage  => 'foo' } }
     it do
-       expect { should }.to raise_error
+       expect { should }.to raise_error(Puppet::Error,/Unknown type/)
     end
   end
   context 'with specifying config_dir_purge set to invalid value' do
     let(:params) { {:config_dir_purge  => 'invalid' } }
     it do
-       expect { should }.to raise_error
+       expect { should }.to raise_error(Puppet::Error,/Unknown type/)
     end
   end
   context 'with specifying config_dir set to invalid value' do
     let(:params) { {:config_dir  => 'invalidpath' } }
     it do
-       expect { should }.to raise_error
+       expect { should }.to raise_error(Puppet::Error,/is not an absolute path/)
     end
   end
   context 'with specifying config_file param set to invalid value' do
     let(:params) { {:config_file  => 'invalidpath' } }
     it do
-       expect { should }.to raise_error
+       expect { should }.to raise_error(Puppet::Error,/is not an absolute path/)
     end
   end
   context 'with specifying adminfile param set to invalid value' do
     let(:params) { {:package_adminfile  => 'invalidpath' } }
     it do
-       expect { should }.to raise_error
+       expect { should }.to raise_error(Puppet::Error,/is not an absolute path/)
+    end
+  end
+  context 'with specifying sudoers hash set to invalid value' do
+    let(:params) { {:sudoers  => [ "not_a_hash" ] } }
+    it do
+       expect { should }.to raise_error(Puppet::Error,/is not a Hash/)
     end
   end
 
