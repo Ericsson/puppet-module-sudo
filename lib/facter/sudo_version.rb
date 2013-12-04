@@ -12,9 +12,6 @@ Facter.add("sudo_version") do
   setcode do
     response = ''
 
-    # Which sudo is used?
-    display_name = ''
-
     if /\/quest\// =~ path then
       # quest-sudo is used!
       regexp = /^Sudo version +(\S+)q\d+$/
@@ -29,7 +26,6 @@ Facter.add("sudo_version") do
       str = Facter::Util::Resolution.exec( cmd )
       if $?.exitstatus == 0 and regexp =~ str then
         response = Regexp.last_match(1)
-
       end
     end
 
