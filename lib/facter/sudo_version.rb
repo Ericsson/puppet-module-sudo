@@ -1,41 +1,54 @@
 # sudo_version
 
-if File.exists? '/opt/quest/bin/sudo'
-  path = '/opt/quest/bin/sudo'
-  questsudo = true
-else
-  path = '/usr/bin/sudo'
-  questsudo = false
-end
+module Facter::Util::SudoVersion
+  class << self
 
-Facter.add("sudo_version") do
-  setcode do
-    response = ''
+    def get_sudo_version
+      response = ''
+      if File.exists? '/opt/quest/bin/sudo'
+        path = '/opt/quest/bin/sudo'
+        @questsudo = true
+      else
+        path = '/usr/bin/sudo'
+        @questsudo = false
+      end
+    
+      if /\/quest\// =~ path then
+        # quest-sudo is used!
+        regexp = /^Sudo version +(\S+)q\d+$/
+      else
+        # sudo is used!
+        regexp = /^Sudo version +(\S+)$/
+      end
 
-    if /\/quest\// =~ path then
-      # quest-sudo is used!
-      regexp = /^Sudo version +(\S+)q\d+$/
-    else
-      # sudo is used!
-      regexp = /^Sudo version +(\S+)$/
+      # Check if path is valid
+      if File.exist?( path ) then
+        cmd = path + ' -V'
+        str = Facter::Util::Resolution.exec( cmd )
+        if $?.exitstatus == 0 and regexp =~ str then
+          response = Regexp.last_match(1)
+        end
+      end
+
+      response # Return
     end
 
-    # Check if path is valid
-    if File.exist?( path ) then
-      cmd = path + ' -V'
-      str = Facter::Util::Resolution.exec( cmd )
-      if $?.exitstatus == 0 and regexp =~ str then
-        response = Regexp.last_match(1)
+    def get_quest_sudo
+      if File.exists? '/opt/quest/bin/sudo'
+        true
+      else
+        false
       end
     end
 
-    response # Return
   end
 end
 
+Facter.add("sudo_version") do
+  setcode { Facter::Util::SudoVersion.get_sudo_version }
+end
+
 Facter.add("quest_sudo") do
-  setcode do
-    questsudo
-  end
+  setcode { Facter::Util::SudoVersion.get_quest_sudo }
 end
 
