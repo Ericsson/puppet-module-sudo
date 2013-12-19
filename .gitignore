@@ -28,3 +28,8 @@ doc/
 metadata.json
 coverage/
 spec/fixtures/modules/*
+
+#emacs backups
+*~
+\#*#
+
