@@ -1,16 +1,22 @@
-# sudo_version
-
+# Fact: sudo_version
+#   returns the version of Sudo
+#
+# Fact: quest_sudo
+#   boolean based on the presence of quest sudo
+#
 module Facter::Util::SudoVersion
   class << self
 
     def get_sudo_version
       response = ''
-      if File.exists? '/opt/quest/bin/sudo'
+      if File.exists? '/usr/bin/sudo'
+        path = '/usr/bin/sudo'
+        @questsudo = false
+      elsif File.exists? '/opt/quest/bin/sudo'
         path = '/opt/quest/bin/sudo'
         @questsudo = true
       else
-        path = '/usr/bin/sudo'
-        @questsudo = false
+        path = ''
       end
 
       if /\/quest\// =~ path then
@@ -22,15 +28,15 @@ module Facter::Util::SudoVersion
       end
 
       # Check if path is valid
-      if File.exist?( path ) then
+      if File.exist?(path) then
         cmd = path + ' -V'
-        str = Facter::Util::Resolution.exec( cmd )
+        str = Facter::Util::Resolution.exec(cmd)
         if $?.exitstatus == 0 and regexp =~ str then
           response = Regexp.last_match(1)
         end
       end
 
-      response # Return
+      response
     end
 
     def get_quest_sudo
@@ -44,10 +50,10 @@ module Facter::Util::SudoVersion
   end
 end
 
-Facter.add("sudo_version") do
+Facter.add('sudo_version') do
   setcode { Facter::Util::SudoVersion.get_sudo_version }
 end
 
-Facter.add("quest_sudo") do
+Facter.add('quest_sudo') do
   setcode { Facter::Util::SudoVersion.get_quest_sudo }
 end
