@@ -64,7 +64,7 @@ config_dir_ensure
 -----------------
 Ensure attribute of $config_dir
 
-- *Default*: 'present'
+- *Default*: 'directory'
 
 config_dir_purge
 ----------------

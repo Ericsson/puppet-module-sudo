@@ -11,7 +11,7 @@ class sudo (
   $config_dir        = '/etc/sudoers.d',
   $config_dir_group  = 'root',
   $config_dir_mode   = '0750',
-  $config_dir_ensure = 'present',
+  $config_dir_ensure = 'directory',
   $config_dir_purge  = 'true',
   $sudoers           = undef,
   $sudoers_manage    = 'true',

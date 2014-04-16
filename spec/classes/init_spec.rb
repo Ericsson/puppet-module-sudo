@@ -7,7 +7,7 @@ describe 'sudo' do
         'name'   => 'sudo',
       })
       should contain_file('/etc/sudoers.d').with({
-        'ensure'  => 'present',
+        'ensure'  => 'directory',
         'owner'   => 'root',
         'group'   => 'root',
         'mode'    => '0750',
@@ -83,7 +83,7 @@ describe 'sudo' do
     let(:params) { {:package_manage  => 'false' } }
     it do
       should contain_file('/etc/sudoers.d').with({
-        'ensure'  => 'present',
+        'ensure'  => 'directory',
         'owner'   => 'root',
         'group'   => 'root',
         'mode'    => '0750',
