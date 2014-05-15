@@ -108,6 +108,66 @@ Mode of $config_file
 
 - *Default*: '0440'
 
+requiretty
+----------
+Enable requiretty option in sudoers file
+
+- *Default*: 'true'
+
+visiblepw
+---------
+Enable visiblepw option in sudoers file
+
+- *Default*: 'false'
+
+always_set_home
+---------------
+Enable always_set_home option in sudoers file
+
+- *Default*: 'true'
+
+envreset
+--------
+Enable envreset option in sudoers file
+
+- *Default*: 'true'
+
+envkeep
+-------
+Array of environment variables for envkeep option in sudoers file
+
+- *Default*: ['COLORS','DISPLAY','HOSTNAME','HISTSIZE','INPUTRC','KDEDIR','LS_COLORS','MAIL','PS1','PS2','QTDIR','USERNAME','LANG','LC_ADDRESS','LC_CTYPE','LC_COLLATE','LC_IDENTIFICATION','LC_MEASUREMENT','LC_MESSAGES','LC_MONETARY','LC_NAME','LC_NUMERIC','LC_PAPER','LC_TELEPHONE','LC_TIME','LC_ALL','LANGUAGE','LINGUAS','_XKB_CHARSET','XAUTHORITY']
+
+secure_path
+-----------
+String of secure path in sudoers file
+
+- *Default*: '/sbin:/bin:/usr/sbin:/usr/bin'
+
+root_allow_all
+--------------
+Enable sudo rule in sudoers file for root to get full access
+
+- *Default*: 'true'
+
+includedir
+----------
+Enable inclusion of fragments directory in sudoers file. Requires sudo >= 1.7.2
+
+- *Defaults*: 'true'
+
+include_libsudo_vas
+-------------------
+Enable inclusion of libsudo_vas plugin. Requires sudo >= 1.8
+
+- *Defaults*: 'false'
+
+libsudo_vas_location
+--------------------
+Location of libsudo_vas plugin
+
+- *Defaults*: 'USE_DEFAULTS', based on architecture
+
 ## sudo::fragment parameters
 
 ensure
