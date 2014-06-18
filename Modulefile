@@ -1,5 +1,5 @@
 name 'ericsson-sudo'
-version '0.2.1'
+version '0.3.0'
 source 'git://github.com/Ericsson/puppet-module-sudo.git'
 author 'ericsson'
 license 'Apache License, Version 2.0'
