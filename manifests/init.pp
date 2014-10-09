@@ -104,7 +104,7 @@ class sudo (
   }
   # Only works with sudo >= 1.8
   if $libsudo_vas_location == 'USE_DEFAULTS' {
-    if $::architecture == 'x86_64' {
+    if $::architecture =~ /amd64|x86_64/ {
       $libsudo_vas_location_real = '/opt/quest/lib64/libsudo_vas.so'
     } else {
       $libsudo_vas_location_real = '/opt/quest/lib/libsudo_vas.so'
