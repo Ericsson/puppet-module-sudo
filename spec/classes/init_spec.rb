@@ -182,6 +182,26 @@ describe 'sudo' do
       should contain_file('/etc/sudoers').with_content(/^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so"$/)
     end
   end
+  context 'with default options and include_libsudo_vas set to true on SunOS sun4v' do
+    let(:facts) do {
+      :architecture => 'sun4v',
+      :kernel => 'SunOS', }
+    end
+    let(:params) { { :include_libsudo_vas   => true, } }
+    it do
+      should contain_file('/etc/sudoers').with_content(/^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so"$/)
+    end
+  end
+  context 'with default options and include_libsudo_vas set to true on SunOS i86pc' do
+    let(:facts) do {
+      :architecture => 'i86pc',
+      :kernel => 'SunOS', }
+    end
+    let(:params) { { :include_libsudo_vas   => true, } }
+    it do
+      should contain_file('/etc/sudoers').with_content(/^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so"$/)
+    end
+  end
 
   context 'with specifying package_manage param set to invalid value' do
     let(:params) { {:package_manage  => [ true ] } }
