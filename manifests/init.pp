@@ -15,6 +15,7 @@ class sudo (
   $config_dir_purge     = 'true',
   $sudoers              = undef,
   $sudoers_manage       = 'true',
+  $tmp_config_dir       = '/tmp',
   $config_file          = '/etc/sudoers',
   $config_file_group    = 'root',
   $config_file_owner    = 'root',
@@ -144,7 +145,23 @@ class sudo (
     # Only works with sudo >= 1.7.2
     if $sudoers != undef {
       validate_hash($sudoers)
+      file { 'create_merge_file':
+        ensure  => 'present',
+        path    => "${tmp_config_dir}/puppet_verify_sudo_merged",
+        owner   => 'root',
+        group   => $config_dir_group,
+        mode    => '0440',
+        content => '',
+        #        require => Exec['remove_merge_file']
+      }
+
+      Sudo::Fragment <| |> -> Exec <|title == 'remove_merge_file'|>
       create_resources('sudo::fragment',$sudoers)
+      exec { 'remove_merge_file':
+        command => "rm ${tmp_config_dir}/puppet_verify_sudo_merged",
+        path    => '/usr/bin:/usr/sbin:/bin',
+        onlyif  => "test -f ${tmp_config_dir}/puppet_verify_sudo_merged",
+      }
     }
   }
 }
