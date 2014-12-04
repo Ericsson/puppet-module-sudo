@@ -152,7 +152,6 @@ class sudo (
         group   => $config_dir_group,
         mode    => '0440',
         content => '',
-        #        require => Exec['remove_merge_file']
       }
 
       Sudo::Fragment <| |> -> Exec <|title == 'remove_merge_file'|>
