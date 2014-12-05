@@ -34,9 +34,9 @@ define sudo::fragment (
   }
 
 
-  exec {"verify_sudoers_${name}":
-    path    => '/usr/bin:/usr/sbin:/bin',
+  exec { "verify_sudoers_${name}":
     command => "rm -f ${tmp_config_dir}/puppet_verify_sudo_merged; false",
+    path    => '/usr/bin:/usr/sbin:/bin',
     unless  => "visudo -f ${tmp_config_dir}/puppet_verify_sudo_merged -c",
     require => Exec["delete_tmp_sudoers_${name}"],
   }
