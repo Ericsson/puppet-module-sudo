@@ -27,7 +27,9 @@ doc/
 # Puppet
 coverage/
 spec/fixtures/modules/*
+spec/fixtures/manifests/*
+Gemfile.lock
 
 #emacs backups
-*~
-\#*#
+-*~
+-\#*#
