@@ -31,52 +31,52 @@ class sudo (
   $libsudo_vas_location = 'USE_DEFAULTS',
 ) {
 
-  if type($package_manage) == 'string' {
+  if is_string($package_manage) {
     $package_manage_real = str2bool($package_manage)
   } else {
     $package_manage_real = $package_manage
   }
-  if type($sudoers_manage) == 'string' {
+  if is_string($sudoers_manage) {
     $sudoers_manage_real = str2bool($sudoers_manage)
   } else {
     $sudoers_manage_real = $sudoers_manage
   }
-  if type($config_dir_purge) == 'string' {
+  if is_string($config_dir_purge) {
     $config_dir_purge_real = str2bool($config_dir_purge)
   } else {
     $config_dir_purge_real = $config_dir_purge
   }
-  if type($requiretty) == 'string' {
+  if is_string($requiretty) {
     $requiretty_real = str2bool($requiretty)
   } else {
     $requiretty_real = $requiretty
   }
-  if type($visiblepw) == 'string' {
+  if is_string($visiblepw) {
     $visiblepw_real = str2bool($visiblepw)
   } else {
     $visiblepw_real = $visiblepw
   }
-  if type($always_set_home) == 'string' {
+  if is_string($always_set_home) {
     $always_set_home_real = str2bool($always_set_home)
   } else {
     $always_set_home_real = $always_set_home
   }
-  if type($envreset) == 'string' {
+  if is_string($envreset) {
     $envreset_real = str2bool($envreset)
   } else {
     $envreset_real = $envreset
   }
-  if type($root_allow_all) == 'string' {
+  if is_string($root_allow_all) {
     $root_allow_all_real = str2bool($root_allow_all)
   } else {
     $root_allow_all_real = $root_allow_all
   }
-  if type($includedir) == 'string' {
+  if is_string($includedir) {
     $includedir_real = str2bool($includedir)
   } else {
     $includedir_real = $includedir
   }
-  if type($include_libsudo_vas) == 'string' {
+  if is_string($include_libsudo_vas) {
     $include_libsudo_vas_real = str2bool($include_libsudo_vas)
   } else {
     $include_libsudo_vas_real = $include_libsudo_vas
