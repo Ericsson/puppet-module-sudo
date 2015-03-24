@@ -48,7 +48,7 @@ class sudo (
   }
   if is_string($requiretty) {
     $requiretty_real = str2bool($requiretty)
-  } else {
+  } else{
     $requiretty_real = $requiretty
   }
   if is_string($visiblepw) {
