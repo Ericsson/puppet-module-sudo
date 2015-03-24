@@ -206,110 +206,146 @@ describe 'sudo' do
   context 'with specifying package_manage param set to invalid value' do
     let(:params) { {:package_manage  => [ true ] } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not a boolean/)
+       expect {
+         should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not a boolean/)
     end
   end
   context 'with specifying sudoers_manage param set to invalid value' do
     let(:params) { {:sudoers_manage  => 'foo' } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/Unknown type/)
+       expect {
+         should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/Unknown type/)
     end
   end
   context 'with specifying config_dir_purge set to invalid value' do
     let(:params) { {:config_dir_purge  => 'invalid' } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/Unknown type/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/Unknown type/)
     end
   end
   context 'with specifying config_dir set to invalid value' do
     let(:params) { {:config_dir  => 'invalidpath' } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not an absolute path/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not an absolute path/)
     end
   end
   context 'with specifying config_file param set to invalid value' do
     let(:params) { {:config_file  => 'invalidpath' } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not an absolute path/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not an absolute path/)
     end
   end
   context 'with specifying adminfile param set to invalid value' do
     let(:params) { {:package_adminfile  => 'invalidpath' } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not an absolute path/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not an absolute path/)
     end
   end
   context 'with specifying sudoers hash set to invalid value' do
     let(:params) { {:sudoers  => [ "not_a_hash" ] } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not a Hash/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not a Hash/)
     end
   end
   context 'with specifying requiretty set to invalid value' do
     let(:params) { {:requiretty  => [ "not_a_bool" ] } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not a boolean/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not a boolean/)
     end
   end
   context 'with specifying visiblepw set to invalid value' do
     let(:params) { {:visiblepw  => [ "not_a_bool" ] } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not a boolean/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not a boolean/)
     end
   end
   context 'with specifying always_set_home set to invalid value' do
     let(:params) { {:always_set_home  => [ "not_a_bool" ] } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not a boolean/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not a boolean/)
     end
   end
   context 'with specifying envreset set to invalid value' do
     let(:params) { {:envreset  => [ "not_a_bool" ] } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not a boolean/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not a boolean/)
     end
   end
   context 'with specifying envkeep set to invalid value' do
     let(:params) { {:envkeep  => false } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not an Array/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not an Array/)
     end
   end
   context 'with specifying secure_path set to invalid value' do
     let(:params) { {:secure_path  => [ "not_a_string" ] } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not a string/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not a string/)
     end
   end
   context 'with specifying root_allow_all set to invalid value' do
     let(:params) { {:root_allow_all  => [ "not_a_bool" ] } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not a boolean/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not a boolean/)
     end
   end
   context 'with specifying includedir to invalid value' do
     let(:params) { {:includedir  => [ "not_a_bool" ] } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not a boolean/)
+       expect {
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not a boolean/)
     end
   end
   context 'with specifying include_libsudo_vas to invalid value' do
     let(:params) { {:include_libsudo_vas  => [ "not_a_bool" ] } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not a boolean/)
+       expect { 
+	 should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not a boolean/)
     end
   end
   context 'with specifying libsudo_vas_location to invalid value' do
     let(:params) { {:libsudo_vas_location  => [ "not_an_absolute_path" ],
                     :include_libsudo_vas   => true, } }
     it do
-       expect { should }.to raise_error(Puppet::Error,/is not an absolute path/)
+       expect {
+         should contain_class('sudo')
+       }.to raise_error(Puppet::Error,/is not an absolute path/)
     end
   end
   context 'with specifying hiera_merge_sudoers to invalid value' do
     let(:params) { {:hiera_merge_sudoers  => 'invalid', }}
     it do
-      expect { should}.to raise_error(Puppet::Error,/Unknown type of boolean given/)
+      expect {
+        should contain_class('sudo')
+      }.to raise_error(Puppet::Error,/Unknown type of boolean given/)
     end
   end
 end
