@@ -306,4 +306,10 @@ describe 'sudo' do
        expect { should }.to raise_error(Puppet::Error,/is not an absolute path/)
     end
   end
+  context 'with specifying hiera_merge_sudoers to invalid value' do
+    let(:params) { {:hiera_merge_sudoers  => 'invalid', }}
+    it do
+      expect { should}.to raise_error(Puppet::Error,/Unknown type of boolean given/)
+    end
+  end
 end

@@ -29,6 +29,7 @@ class sudo (
   $includedir           = 'true',
   $include_libsudo_vas  = 'false',
   $libsudo_vas_location = 'USE_DEFAULTS',
+  $hiera_merge_sudoers  = false,
 ) {
 
   if type($package_manage) == 'string' {
@@ -82,6 +83,12 @@ class sudo (
     $include_libsudo_vas_real = $include_libsudo_vas
   }
 
+  if is_string($hiera_merge_sudoers) {
+    $hiera_merge_sudoers_bool = str2bool($hiera_merge_sudoers)
+  } else {
+    $hiera_merge_sudoers_bool = $hiera_merge_sudoers
+  }
+
   # Validate params
   validate_bool($package_manage_real)
   validate_bool($sudoers_manage_real)
@@ -93,6 +100,7 @@ class sudo (
   validate_bool($root_allow_all_real)
   validate_bool($includedir_real)
   validate_bool($include_libsudo_vas_real)
+  validate_bool($hiera_merge_sudoers_bool)
   validate_absolute_path($config_dir)
   validate_absolute_path($config_file)
   if $package_adminfile != undef {
@@ -143,8 +151,13 @@ class sudo (
 
     # Only works with sudo >= 1.7.2
     if $sudoers != undef {
-      validate_hash($sudoers)
-      create_resources('sudo::fragment',$sudoers)
+      if $hiera_merge_sudoers_bool {
+        $sudoers_real = hiera_hash(sudo::sudoers)
+      } else {
+        $sudoers_real = $sudoers
+      }
+      validate_hash($sudoers_real)
+      create_resources('sudo::fragment',$sudoers_real)
     }
   }
 }
