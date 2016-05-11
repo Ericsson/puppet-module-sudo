@@ -8,6 +8,12 @@
   "project_page": "https://github.com/Ericsson/puppet-module-sudo",
   "issues_url": "https://github.com/Ericsson/puppet-module-sudo/issues",
   "description": "manage sudo with ability to not manage package or sudoers file",
+  "requirements": [
+  {
+    "name": "puppet",
+    "version_requirement": ">=3.1.0 <5.0.0"
+  }
+  ],
   "dependencies": [
     {"name":"puppetlabs/stdlib","version_requirement":">= 3.2.0 < 5.0.0"}
   ]
