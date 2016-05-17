@@ -1,5 +1,11 @@
 require 'spec_helper'
 describe 'sudo' do
+  let :facts do
+    {
+      :architecture => 'x86_64',
+    }
+  end
+
   context 'with class default options' do
     it do
       should contain_package('sudo-package').with({
@@ -153,50 +159,54 @@ describe 'sudo' do
   end
 
   context 'with default options and include_libsudo_vas set to true on Linux x86_64' do
-    let(:facts) do {
-      :architecture => 'x86_64',
-      :kernel => 'Linux', }
-    end
     let(:params) { { :include_libsudo_vas   => true, } }
     it do
       should contain_file('/etc/sudoers').with_content(/^Defaults    group_plugin=\"\/opt\/quest\/lib64\/libsudo_vas.so"$/)
     end
   end
   context 'with default options and include_libsudo_vas set to true on Linux amd64' do
-    let(:facts) do {
-      :architecture => 'amd64',
-      :kernel => 'Linux', }
+    let :facts do
+      {
+        :architecture => 'amd64',
+      }
     end
+
     let(:params) { { :include_libsudo_vas   => true, } }
     it do
       should contain_file('/etc/sudoers').with_content(/^Defaults    group_plugin=\"\/opt\/quest\/lib64\/libsudo_vas.so"$/)
     end
   end
   context 'with default options and include_libsudo_vas set to true on Linux i686' do
-    let(:facts) do {
-      :architecture => 'i686',
-      :kernel => 'Linux', }
+    let :facts do
+      {
+        :architecture => 'i686',
+      }
     end
+
     let(:params) { { :include_libsudo_vas   => true, } }
     it do
       should contain_file('/etc/sudoers').with_content(/^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so"$/)
     end
   end
   context 'with default options and include_libsudo_vas set to true on SunOS sun4v' do
-    let(:facts) do {
-      :architecture => 'sun4v',
-      :kernel => 'SunOS', }
+    let :facts do
+     {
+       :architecture => 'sun4v',
+     }
     end
+
     let(:params) { { :include_libsudo_vas   => true, } }
     it do
       should contain_file('/etc/sudoers').with_content(/^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so"$/)
     end
   end
   context 'with default options and include_libsudo_vas set to true on SunOS i86pc' do
-    let(:facts) do {
-      :architecture => 'i86pc',
-      :kernel => 'SunOS', }
+    let :facts do
+      {
+        :architecture => 'i86pc',
+      }
     end
+
     let(:params) { { :include_libsudo_vas   => true, } }
     it do
       should contain_file('/etc/sudoers').with_content(/^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so"$/)
