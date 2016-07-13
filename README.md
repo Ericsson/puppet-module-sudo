@@ -220,8 +220,7 @@ Group of the file
 <pre>
 sudo::sudoers:
   "admins":
-    content : "%admins ALL=(ALL) NOPASSWD: ALL\n"
+    content : "%admins ALL=(ALL) NOPASSWD: ALL"
   "userX":
-    content : "USERX ALL=(ALL) ALL\n"
+    content : "USERX ALL=(ALL) ALL"
 </pre>
-
