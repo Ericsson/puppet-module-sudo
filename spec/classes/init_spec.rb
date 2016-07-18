@@ -85,7 +85,7 @@ describe 'sudo' do
         'owner'   => 'root',
         'group'   => 'bar',
         'mode'    => '0440',
-        'content' => 'root ALL=(ALL) ALL',
+        'content' => "root ALL=(ALL) ALL\n",
       })
       should contain_file('20_webusers').with({
         'ensure'  => 'present',

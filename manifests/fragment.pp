@@ -16,7 +16,6 @@ define sudo::fragment (
     group   => $config_dir_group,
     mode    => '0440',
     source  => $source,
-    content => $content,
+    content => "${content}\n",
   }
 }
-
