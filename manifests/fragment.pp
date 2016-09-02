@@ -9,6 +9,11 @@ define sudo::fragment (
   $config_dir_group = $sudo::config_dir_group,
 ) {
 
+  $content_real = $content ? {
+    undef   => undef,
+    default => "${content}\n"
+  }
+
   file { "${priority}_${name}":
     ensure  => $ensure,
     path    => "${config_dir}/${priority}_${name}",
@@ -16,6 +21,6 @@ define sudo::fragment (
     group   => $config_dir_group,
     mode    => '0440',
     source  => $source,
-    content => "${content}\n",
+    content => $content_real,
   }
 }
