@@ -3,33 +3,34 @@
 # Module to manage sudoers and sudo package
 #
 class sudo (
-  $package              = 'sudo',
-  $package_source       = undef,
-  $package_ensure       = 'present',
-  $package_manage       = true,
-  $package_adminfile    = undef,
-  $config_dir           = '/etc/sudoers.d',
-  $config_dir_group     = 'root',
-  $config_dir_mode      = '0750',
-  $config_dir_ensure    = 'directory',
-  $config_dir_purge     = true,
-  $sudoers              = undef,
-  $sudoers_manage       = true,
-  $config_file          = '/etc/sudoers',
-  $config_file_group    = 'root',
-  $config_file_owner    = 'root',
-  $config_file_mode     = '0440',
-  $requiretty           = true,
-  $visiblepw            = false,
-  $always_set_home      = true,
-  $envreset             = true,
-  $envkeep              = ['COLORS','DISPLAY','HOSTNAME','HISTSIZE','INPUTRC','KDEDIR','LS_COLORS','MAIL','PS1','PS2','QTDIR','USERNAME','LANG','LC_ADDRESS','LC_CTYPE','LC_COLLATE','LC_IDENTIFICATION','LC_MEASUREMENT','LC_MESSAGES','LC_MONETARY','LC_NAME','LC_NUMERIC','LC_PAPER','LC_TELEPHONE','LC_TIME','LC_ALL','LANGUAGE','LINGUAS','_XKB_CHARSET','XAUTHORITY'],
-  $secure_path          = '/sbin:/bin:/usr/sbin:/usr/bin',
-  $root_allow_all       = true,
-  $includedir           = true,
-  $include_libsudo_vas  = false,
-  $libsudo_vas_location = 'USE_DEFAULTS',
-  $hiera_merge_sudoers  = false,
+  $package                   = 'sudo',
+  $package_source            = undef,
+  $package_ensure            = 'present',
+  $package_manage            = true,
+  $package_adminfile         = undef,
+  $config_dir                = '/etc/sudoers.d',
+  $config_dir_group          = 'root',
+  $config_dir_mode           = '0750',
+  $config_dir_ensure         = 'directory',
+  $config_dir_purge          = true,
+  $sudoers                   = undef,
+  $sudoers_manage            = true,
+  $config_file               = '/etc/sudoers',
+  $config_file_group         = 'root',
+  $config_file_owner         = 'root',
+  $config_file_mode          = '0440',
+  $requiretty                = true,
+  $visiblepw                 = false,
+  $always_set_home           = true,
+  $envreset                  = true,
+  $envkeep                   = ['COLORS','DISPLAY','HOSTNAME','HISTSIZE','INPUTRC','KDEDIR','LS_COLORS','MAIL','PS1','PS2','QTDIR','USERNAME','LANG','LC_ADDRESS','LC_CTYPE','LC_COLLATE','LC_IDENTIFICATION','LC_MEASUREMENT','LC_MESSAGES','LC_MONETARY','LC_NAME','LC_NUMERIC','LC_PAPER','LC_TELEPHONE','LC_TIME','LC_ALL','LANGUAGE','LINGUAS','_XKB_CHARSET','XAUTHORITY'],
+  $secure_path               = '/sbin:/bin:/usr/sbin:/usr/bin',
+  $root_allow_all            = true,
+  $includedir                = true,
+  $include_libsudo_vas       = false,
+  $libsudo_vas_location      = 'USE_DEFAULTS',
+  $always_query_group_plugin = 'USE_DEFAULTS',
+  $hiera_merge_sudoers       = false,
 ) {
 
   if is_string($package_manage) {
@@ -122,6 +123,19 @@ class sudo (
   }
   if $include_libsudo_vas_real == true {
     validate_absolute_path($libsudo_vas_location_real)
+  }
+
+  # Sudo 1.8.15 introduced a new Defaults option 'always_query_group_plugin'.
+  # This option is required in >= 1.8.15 if you want sudo to automatically do
+  # lookups through group_plugins.
+  if $always_query_group_plugin == 'USE_DEFAULTS' {
+    if (versioncmp("${::sudo_version}", '1.8.15') >= 0) and $include_libsudo_vas_real == true { # lint:ignore:only_variable_string
+      $always_query_group_plugin_real = true
+    } else {
+      $always_query_group_plugin_real = false
+    }
+  } else {
+    $always_query_group_plugin_real = $always_query_group_plugin
   }
 
   if $package_manage_real == true {

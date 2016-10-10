@@ -176,6 +176,24 @@ Location of libsudo_vas plugin
 
 - *Defaults*: 'USE_DEFAULTS', based on architecture
 
+always_query_group_plugin
+-------------------------
+Sets Defaults option 'always_query_group_plugin'. Previously all unknown system
+groups was automatically passed to the group plugin. This is no longer the case
+since 1.8.15. To pass unknown system groups to group_plugin 'always_query_group_plugin'
+must be set.
+
+Sudo lines with the syntax below will always use group_plugin to resolve groups.
+plugin for that specific entry:
+<pre>
+%:Group
+</pre>
+
+- *Defaults*: 'USE_DEFAULTS'
+
+This option is automatically enabled if include_libsudo_vas is set to true and
+$::sudo_version => 1.8.15.
+
 ## sudo::fragment parameters
 
 ensure
