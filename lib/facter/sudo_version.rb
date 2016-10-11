@@ -1,59 +1,46 @@
 # Fact: sudo_version
-#   returns the version of Sudo
+#   returns the version string of sudo
 #
 # Fact: quest_sudo
 #   boolean based on the presence of quest sudo
 #
-module Facter::Util::SudoVersion
-  class << self
+# Fact: sudo_version_numeric
+#   string that returns the numeric part of the version string of sudo
+#
+module SudoVersion
+  def self.fetch_sudo_path
+    if File.exist? '/opt/quest/bin/sudo'
+      '/opt/quest/bin/sudo'
+    else
+      Facter::Util::Resolution.which('sudo')
+    end
+  end
 
-    def get_sudo_version
-      response = ''
-      if File.exists? '/usr/bin/sudo'
-        path = '/usr/bin/sudo'
-        @questsudo = false
-      elsif File.exists? '/opt/quest/bin/sudo'
-        path = '/opt/quest/bin/sudo'
-        @questsudo = true
-      else
-        path = ''
-      end
+  def self.fetch_quest_sudo
+    SudoVersion.fetch_sudo_path =~ %r{/quest/} ? true : false
+  end
 
-      if /\/quest\// =~ path then
-        # quest-sudo is used!
-        regexp = /^Sudo version +(\S+)q\d+$/
-      else
-        # sudo is used!
-        regexp = /^Sudo version +(\S+)$/
-      end
+  def self.fetch_sudo_version
+    if SudoVersion.fetch_quest_sudo == true
+      Facter::Util::Resolution.exec(SudoVersion.fetch_sudo_path + ' -V 2>&1')[/^Sudo version +(\S+)q\d+$/, 1]
+    else
+      Facter::Util::Resolution.exec(SudoVersion.fetch_sudo_path + ' -V 2>&1')[/^Sudo version +(\S+)$/, 1]
+    end
+  end
 
-      # Check if path is valid
-      if File.exist?(path) then
-        cmd = path + ' -V'
-        str = Facter::Util::Resolution.exec(cmd)
-        if $?.exitstatus == 0 and regexp =~ str then
-          response = Regexp.last_match(1)
-        end
-      end
-
-      response
+  def self.add_facts
+    Facter.add('sudo_version') do
+      setcode { SudoVersion.fetch_sudo_path && SudoVersion.fetch_sudo_version }
     end
 
-    def get_quest_sudo
-      if File.exists? '/opt/quest/bin/sudo'
-        true
-      else
-        false
-      end
+    Facter.add('quest_sudo') do
+      setcode { SudoVersion.fetch_quest_sudo }
     end
 
+    Facter.add('sudo_version_numeric') do
+      setcode { Facter.value(:sudo_version).match(/(\d+\.\d+\.\d+|\d+\.\d+)/)[0] }
+    end
   end
 end
 
-Facter.add('sudo_version') do
-  setcode { Facter::Util::SudoVersion.get_sudo_version }
-end
-
-Facter.add('quest_sudo') do
-  setcode { Facter::Util::SudoVersion.get_quest_sudo }
-end
+SudoVersion.add_facts
