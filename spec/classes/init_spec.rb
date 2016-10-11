@@ -1,10 +1,11 @@
 require 'spec_helper'
 describe 'sudo' do
-  let :facts do
-    {
-      :architecture => 'x86_64',
-    }
-  end
+  default_facts = {
+    :architecture => 'x86_64',
+    :sudo_version => '1.8.6p7'
+  }
+
+  let(:facts) { default_facts }
 
   context 'with class default options' do
     it do
@@ -33,6 +34,7 @@ describe 'sudo' do
       should contain_file('/etc/sudoers').with_content(/^Defaults    secure_path = \/sbin:\/bin:\/usr\/sbin:\/usr\/bin$/)
       should contain_file('/etc/sudoers').with_content(/^root  ALL=\(ALL\)   ALL$/)
       should contain_file('/etc/sudoers').with_content(/^#includedir \/etc\/sudoers.d$/)
+      should_not contain_file('/etc/sudoers').with_content(/^Defaults    always_query_group_plugin$/)
     end
   end
 
@@ -166,9 +168,11 @@ describe 'sudo' do
   end
   context 'with default options and include_libsudo_vas set to true on Linux amd64' do
     let :facts do
-      {
-        :architecture => 'amd64',
-      }
+      default_facts.merge(
+        {
+          :architecture => 'amd64',
+        }
+      )
     end
 
     let(:params) { { :include_libsudo_vas   => true, } }
@@ -178,9 +182,11 @@ describe 'sudo' do
   end
   context 'with default options and include_libsudo_vas set to true on Linux i686' do
     let :facts do
-      {
-        :architecture => 'i686',
-      }
+      default_facts.merge(
+        {
+          :architecture => 'i686',
+        }
+      )
     end
 
     let(:params) { { :include_libsudo_vas   => true, } }
@@ -190,9 +196,11 @@ describe 'sudo' do
   end
   context 'with default options and include_libsudo_vas set to true on SunOS sun4v' do
     let :facts do
-     {
-       :architecture => 'sun4v',
-     }
+      default_facts.merge(
+        {
+          :architecture => 'sun4v',
+        }
+      )
     end
 
     let(:params) { { :include_libsudo_vas   => true, } }
@@ -202,14 +210,45 @@ describe 'sudo' do
   end
   context 'with default options and include_libsudo_vas set to true on SunOS i86pc' do
     let :facts do
-      {
-        :architecture => 'i86pc',
-      }
+      default_facts.merge(
+        {
+          :architecture => 'i86pc',
+        }
+      )
     end
 
     let(:params) { { :include_libsudo_vas   => true, } }
     it do
       should contain_file('/etc/sudoers').with_content(/^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so"$/)
+    end
+  end
+
+  describe 'with always query_group_plugin' do
+    context 'using module default and sudo_version returns 1.8.15' do
+      let(:facts) { default_facts.merge(:sudo_version => '1.8.15') }
+
+      it do
+        should_not contain_file('/etc/sudoers').with_content(/^Defaults    always_query_group_plugin$/)
+      end
+    end
+    context 'using module default with include_libsudo_vas set to true and sudo_version returns 1.8.6' do
+      it do
+        should_not contain_file('/etc/sudoers').with_content(/^Defaults    always_query_group_plugin$/)
+      end
+    end
+    context 'using module default with include_libsudo_vas set to true and sudo_version returns 1.8.15' do
+      let(:facts) { default_facts.merge(:sudo_version => '1.8.15') }
+      let(:params) { { :include_libsudo_vas => true } }
+
+      it do
+        should contain_file('/etc/sudoers').with_content(/^Defaults    always_query_group_plugin$/)
+      end
+    end
+    context 'set to true' do
+      let(:params) { { :always_query_group_plugin => true } }
+      it do
+        should contain_file('/etc/sudoers').with_content(/^Defaults    always_query_group_plugin$/)
+      end
     end
   end
 
