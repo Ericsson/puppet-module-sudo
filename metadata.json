@@ -1,6 +1,6 @@
 {
   "name": "ericsson-sudo",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "author": "ericsson",
   "summary": "manage sudo",
   "license": "Apache-2.0",
