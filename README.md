@@ -13,9 +13,29 @@ Must have at least version 1.7.2 of sudo, which is where `includedir` was introd
 
 # Compatability #
 
-This module has been tested to work on the following systems with Puppet v3
-(with and without the future parser) and Puppet v4 with Ruby versions 1.8.7,
-1.9.3, 2.0.0 and 2.1.0.
+This module has been tested to work on the following systems with the latest
+Puppet v3, v3 with future parser, v4, v5 and v6. See `.travis.yml` for the
+exact matrix of supported Puppet and ruby versions.
+
+## OS Distributions ##
+
+ * Debian 7
+ * Debian 8
+ * EL 5
+ * EL 6
+ * EL 7
+ * SLED 10
+ * SLED 11
+ * SLED 12
+ * SLES 10
+ * SLES 11
+ * SLES 12
+ * Solaris 9
+ * Solaris 10
+ * Solaris 11
+ * Ubuntu 12.04 LTS
+ * Ubuntu 14.04 LTS
+ * Ubuntu 16.04 LTS
 
 
 # Parameters #
