@@ -23,7 +23,7 @@ class sudo (
   $visiblepw                 = false,
   $always_set_home           = true,
   $envreset                  = true,
-  $envkeep                   = ['COLORS','DISPLAY','HOSTNAME','HISTSIZE','INPUTRC','KDEDIR','LS_COLORS','MAIL','PS1','PS2','QTDIR','USERNAME','LANG','LC_ADDRESS','LC_CTYPE','LC_COLLATE','LC_IDENTIFICATION','LC_MEASUREMENT','LC_MESSAGES','LC_MONETARY','LC_NAME','LC_NUMERIC','LC_PAPER','LC_TELEPHONE','LC_TIME','LC_ALL','LANGUAGE','LINGUAS','_XKB_CHARSET','XAUTHORITY'],
+  $envkeep                   = ['COLORS','DISPLAY','HOSTNAME','HISTSIZE','INPUTRC','KDEDIR','LS_COLORS','MAIL','PS1','PS2','QTDIR','USERNAME','LANG','LC_ADDRESS','LC_CTYPE','LC_COLLATE','LC_IDENTIFICATION','LC_MEASUREMENT','LC_MESSAGES','LC_MONETARY','LC_NAME','LC_NUMERIC','LC_PAPER','LC_TELEPHONE','LC_TIME','LC_ALL','LANGUAGE','LINGUAS','_XKB_CHARSET','XAUTHORITY'], #lint:ignore:140chars
   $secure_path               = '/sbin:/bin:/usr/sbin:/usr/bin',
   $root_allow_all            = true,
   $includedir                = true,
