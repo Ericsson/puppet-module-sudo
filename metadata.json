@@ -7,52 +7,93 @@
   "source": "git://github.com/Ericsson/puppet-module-sudo.git",
   "project_page": "https://github.com/Ericsson/puppet-module-sudo",
   "issues_url": "https://github.com/Ericsson/puppet-module-sudo/issues",
-  "description": "manage sudo with ability to not manage package or sudoers file",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.6.0 < 5.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "7",
+        "8"
+      ]
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "OracleLinux",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Scientific",
+      "operatingsystemrelease": [
+        "5",
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Solaris",
+      "operatingsystemrelease": [
+        "9",
+        "10",
+        "11"
+      ]
+    },
+    {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "10",
+        "11",
+        "12"
+      ]
+    },
+    {
+      "operatingsystem": "SLED",
+      "operatingsystemrelease": [
+        "10",
+        "11",
+        "12"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04",
+        "16.04"
+      ]
+    }
+  ],
   "requirements": [
     {
       "name": "puppet",
       "version_requirement": ">= 3.1.0 < 7.0.0"
     }
   ],
-  "operatingsystem_support": [
-    {
-      "operatingsystem": "Debian",
-      "operatingsystemrelease": ["7","8"]
-    },
-    {
-      "operatingsystem": "RedHat",
-      "operatingsystemrelease": ["5","6","7"]
-    },
-    {
-      "operatingsystem": "CentOS",
-      "operatingsystemrelease": ["5","6","7"]
-    },
-    {
-      "operatingsystem": "OracleLinux",
-      "operatingsystemrelease": ["5","6","7"]
-    },
-    {
-      "operatingsystem": "Scientific",
-      "operatingsystemrelease": ["5","6","7"]
-    },
-    {
-      "operatingsystem": "Solaris",
-      "operatingsystemrelease": ["9","10","11"]
-    },
-    {
-      "operatingsystem": "SLES",
-      "operatingsystemrelease": ["10","11","12"]
-    },
-    {
-      "operatingsystem": "SLED",
-      "operatingsystemrelease": ["10","11","12"]
-    },
-    {
-      "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": ["12.04","14.04","16.04"]
-    }
-  ],
-  "dependencies": [
-    {"name":"puppetlabs/stdlib","version_requirement":">= 4.6.0 < 5.0.0"}
-  ]
+  "description": "manage sudo with ability to not manage package or sudoers file",
+  "pdk-version": "2.1.1",
+  "template-url": "pdk-default#2.1.1",
+  "template-ref": "tags/2.1.1-0-g03daa92"
 }

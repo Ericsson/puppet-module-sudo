@@ -8,11 +8,11 @@ Facter.add('sudo_version') do
     begin
       path = `which sudo`.strip
 
-      if path.length == 0 or not File.exists?(path)
+      if path.empty? || !File.exist?(path)
         raise 'path does not exist'
       end
 
-      regexp = /^Sudo version +(\S+)$/
+      regexp = %r{^Sudo version +(\S+)$}
 
       result = `#{path} -V`.strip
 
