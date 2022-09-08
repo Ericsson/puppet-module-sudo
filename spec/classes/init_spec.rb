@@ -1,7 +1,9 @@
 require 'spec_helper'
 describe 'sudo' do
   default_facts = {
-    architecture: 'x86_64',
+    os: {
+      architecture: 'x86_64',
+    },
     sudo_version: '1.8.6p7'
   }
 
@@ -53,27 +55,27 @@ describe 'sudo' do
         package_ensure:       'absent',
         package_source:       '/file',
         package_adminfile:    '/adminfile',
-        package_manage:       'true',
+        package_manage:       true,
         config_dir:           '/folder',
         config_dir_ensure:    'absent',
         config_dir_mode:      '0550',
         config_dir_group:     'bar',
-        config_dir_purge:     'false',
-        sudoers_manage:       'true',
-        sudoers:              { 'root' => { 'content' => 'root ALL=(ALL) ALL' }, 'webusers' => { 'priority' => '20', 'source' => 'puppet:///files/webusers' } },
+        config_dir_purge:     false,
+        sudoers_manage:       true,
+        sudoers:              { 'root' => { 'content' => 'root ALL=(ALL) ALL' }, 'webusers' => { 'priority' => 20, 'source' => 'puppet:///files/webusers' } },
         config_file:          '/sudoers/file',
         config_file_group:    'group',
         config_file_owner:    'owner',
         config_file_mode:     '1555',
-        requiretty:           'false',
-        visiblepw:            'true',
-        always_set_home:      'false',
-        envreset:             'false',
+        requiretty:           false,
+        visiblepw:            true,
+        always_set_home:      false,
+        envreset:             false,
         envkeep:              ['VARIABLE'],
         secure_path:          '/folder',
-        root_allow_all:       'false',
-        includedir:           'false',
-        include_libsudo_vas:  'true',
+        root_allow_all:       false,
+        includedir:           false,
+        include_libsudo_vas:  true,
         libsudo_vas_location: '/folder/file.so',
       }
     end
@@ -137,7 +139,7 @@ describe 'sudo' do
   end
 
   context 'with default options and package_manage false' do
-    let(:params) { { package_manage: 'false' } }
+    let(:params) { { package_manage: false } }
 
     it do
       is_expected.to contain_file('/etc/sudoers.d').with(
@@ -162,7 +164,7 @@ describe 'sudo' do
   end
 
   context 'with default options and sudoers_manage false' do
-    let(:params) { { sudoers_manage: 'false' } }
+    let(:params) { { sudoers_manage: false } }
 
     it do
       is_expected.to contain_package('sudo-package').with(
@@ -180,8 +182,8 @@ describe 'sudo' do
     let(:params) do
       {
         sudoers:        { 'root' => { 'content' => 'root ALL=(ALL) ALL' }, 'webusers' => { 'priority' => '20', 'source' => 'puppet:///files/webusers' } },
-        sudoers_manage: 'false',
-        package_manage: 'false',
+        sudoers_manage: false,
+        package_manage: false,
       }
     end
 
@@ -195,7 +197,7 @@ describe 'sudo' do
   end
 
   context 'with default options and include_libsudo_vas set to true on Linux x86_64' do
-    let(:params) { { include_libsudo_vas: true, } }
+    let(:params) { { include_libsudo_vas: true } }
 
     it do
       is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    group_plugin=\"\/opt\/quest\/lib64\/libsudo_vas.so\"$})
@@ -206,12 +208,14 @@ describe 'sudo' do
     let :facts do
       default_facts.merge(
         {
-          architecture: 'amd64',
+          os: {
+            architecture: 'amd64',
+          },
         },
       )
     end
 
-    let(:params) { { include_libsudo_vas: true, } }
+    let(:params) { { include_libsudo_vas: true } }
 
     it do
       is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    group_plugin=\"\/opt\/quest\/lib64\/libsudo_vas.so\"$})
@@ -222,12 +226,14 @@ describe 'sudo' do
     let :facts do
       default_facts.merge(
         {
-          architecture: 'i686',
+          os: {
+            architecture: 'i686',
+          },
         },
       )
     end
 
-    let(:params) { { include_libsudo_vas: true, } }
+    let(:params) { { include_libsudo_vas: true } }
 
     it do
       is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so\"$})
@@ -238,12 +244,14 @@ describe 'sudo' do
     let :facts do
       default_facts.merge(
         {
-          architecture: 'sun4v',
+          os: {
+            architecture: 'sun4v',
+          },
         },
       )
     end
 
-    let(:params) { { include_libsudo_vas: true, } }
+    let(:params) { { include_libsudo_vas: true } }
 
     it do
       is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so\"$})
@@ -254,12 +262,14 @@ describe 'sudo' do
     let :facts do
       default_facts.merge(
         {
-          architecture: 'i86pc',
+          os: {
+            architecture: 'i86pc',
+          },
         },
       )
     end
 
-    let(:params) { { include_libsudo_vas: true, } }
+    let(:params) { { include_libsudo_vas: true } }
 
     it do
       is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so\"$})
@@ -291,7 +301,7 @@ describe 'sudo' do
     end
 
     context 'set to true' do
-      let(:params) { { always_query_group_plugin: true } }
+      let(:params) { { always_query_group_plugin: 'true' } }
 
       it do
         is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    always_query_group_plugin$})
@@ -300,12 +310,12 @@ describe 'sudo' do
   end
 
   context 'with specifying package_manage param set to invalid value' do
-    let(:params) { { package_manage: [ true ] } }
+    let(:params) { { package_manage: [ 'true' ] } }
 
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not a boolean})
+      }.to raise_error(Puppet::Error, %r{expects a Boolean})
     end
   end
 
@@ -315,7 +325,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{Unknown type})
+      }.to raise_error(Puppet::Error, %r{expects a Boolean})
     end
   end
 
@@ -325,7 +335,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{Unknown type})
+      }.to raise_error(Puppet::Error, %r{expects a Boolean})
     end
   end
 
@@ -335,7 +345,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not an absolute path})
+      }.to raise_error(Puppet::Error, %r{expects a Stdlib::Absolutepath})
     end
   end
 
@@ -345,7 +355,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not an absolute path})
+      }.to raise_error(Puppet::Error, %r{expects a Stdlib::Absolutepath})
     end
   end
 
@@ -355,7 +365,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not an absolute path})
+      }.to raise_error(Puppet::Error, %r{expects a Stdlib::Absolutepath})
     end
   end
 
@@ -365,7 +375,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not a Hash})
+      }.to raise_error(Puppet::Error, %r{expects a value of type Undef or Hash})
     end
   end
 
@@ -375,7 +385,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not a boolean})
+      }.to raise_error(Puppet::Error, %r{expects a Boolean})
     end
   end
 
@@ -385,7 +395,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not a boolean})
+      }.to raise_error(Puppet::Error, %r{expects a Boolean})
     end
   end
 
@@ -395,7 +405,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not a boolean})
+      }.to raise_error(Puppet::Error, %r{expects a Boolean})
     end
   end
 
@@ -405,7 +415,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not a boolean})
+      }.to raise_error(Puppet::Error, %r{expects a Boolean})
     end
   end
 
@@ -415,7 +425,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not an Array})
+      }.to raise_error(Puppet::Error, %r{expects an Array})
     end
   end
 
@@ -425,7 +435,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not a string})
+      }.to raise_error(Puppet::Error, %r{expects a String })
     end
   end
 
@@ -435,7 +445,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not a boolean})
+      }.to raise_error(Puppet::Error, %r{expects a Boolean})
     end
   end
 
@@ -445,7 +455,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not a boolean})
+      }.to raise_error(Puppet::Error, %r{expects a Boolean})
     end
   end
 
@@ -455,7 +465,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not a boolean})
+      }.to raise_error(Puppet::Error, %r{expects a Boolean})
     end
   end
 
@@ -470,7 +480,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{is not an absolute path})
+      }.to raise_error(Puppet::Error, %r{expects a String value})
     end
   end
 
@@ -480,7 +490,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{Unknown type of boolean given})
+      }.to raise_error(Puppet::Error, %r{expects a Boolean})
     end
   end
 end
