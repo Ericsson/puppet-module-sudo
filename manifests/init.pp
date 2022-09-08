@@ -122,25 +122,14 @@ class sudo (
   Boolean                                        $root_allow_all            = true,
   Boolean                                        $includedir                = true,
   Boolean                                        $include_libsudo_vas       = false,
-  String[1]                                      $libsudo_vas_location      = 'USE_DEFAULTS',
-  String[1]                                      $always_query_group_plugin = 'USE_DEFAULTS',
+  Stdlib::Absolutepath                           $libsudo_vas_location      = '/opt/quest/lib64/libsudo_vas.so',
+  Optional[Boolean]                              $always_query_group_plugin = undef,
   Boolean                                        $hiera_merge_sudoers       = false,
 ) {
-  # Only works with sudo >= 1.8
-  if $libsudo_vas_location == 'USE_DEFAULTS' {
-    if $facts['os']['architecture'] =~ /amd64|x86_64/ {
-      $libsudo_vas_location_real = '/opt/quest/lib64/libsudo_vas.so'
-    } else {
-      $libsudo_vas_location_real = '/opt/quest/lib/libsudo_vas.so'
-    }
-  } else {
-    $libsudo_vas_location_real = $libsudo_vas_location
-  }
-
   # Sudo 1.8.15 introduced a new Defaults option 'always_query_group_plugin'.
   # This option is required in >= 1.8.15 if you want sudo to automatically do
   # lookups through group_plugins.
-  if $always_query_group_plugin == 'USE_DEFAULTS' {
+  if $always_query_group_plugin == undef {
     if (versioncmp("${facts['sudo_version']}", '1.8.15') >= 0) and $include_libsudo_vas == true { # lint:ignore:only_variable_string
       $always_query_group_plugin_real = true
     } else {

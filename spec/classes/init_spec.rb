@@ -301,7 +301,7 @@ describe 'sudo' do
     end
 
     context 'set to true' do
-      let(:params) { { always_query_group_plugin: 'true' } }
+      let(:params) { { always_query_group_plugin: true } }
 
       it do
         is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    always_query_group_plugin$})
@@ -480,7 +480,7 @@ describe 'sudo' do
     it do
       expect {
         is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a String value})
+      }.to raise_error(Puppet::Error, %r{expects a Stdlib::Absolutepath})
     end
   end
 
