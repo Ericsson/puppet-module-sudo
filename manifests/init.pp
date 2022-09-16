@@ -97,7 +97,7 @@
 #   TODO: missing documentation
 #
 class sudo (
-  Variant[Array, String[1]]                      $package                   = 'sudo',
+  String[1]                                      $package                   = 'sudo',
   Optional[String[1]]                            $package_source            = undef,
   Enum['present','absent']                       $package_ensure            = 'present',
   Boolean                                        $package_manage            = true,
@@ -107,7 +107,7 @@ class sudo (
   Stdlib::Filemode                               $config_dir_mode           = '0750',
   Enum['present', 'absent', 'directory', 'link'] $config_dir_ensure         = 'directory',
   Boolean                                        $config_dir_purge          = true,
-  Optional[Hash]                                 $sudoers                   = undef,
+  Hash                                           $sudoers                   = {},
   Boolean                                        $sudoers_manage            = true,
   Stdlib::Absolutepath                           $config_file               = '/etc/sudoers',
   String[1]                                      $config_file_group         = 'root',

@@ -1,496 +1,271 @@
 require 'spec_helper'
-describe 'sudo' do
-  default_facts = {
-    os: {
-      architecture: 'x86_64',
-    },
-    sudo_version: '1.8.6p7'
+describe 'sudo', type: :class do
+  on_supported_os.sort.each do |os, os_facts|
+    describe "on #{os} with default values for parameters" do
+      let(:facts) { os_facts }
+
+      it { is_expected.to contain_class('sudo') }
+      it do
+        is_expected.to contain_package('sudo-package').only_with(
+          {
+            'ensure'    => 'present',
+            'name'      => 'sudo',
+            'source'    => nil,
+            'adminfile' => nil,
+          },
+        )
+      end
+
+      content_sudoers = <<-END.gsub(%r{^\s+\|}, '')
+        |# This file is being maintained by Puppet.
+        |# DO NOT EDIT
+        |
+        |Defaults    requiretty
+        |Defaults    !visiblepw
+        |Defaults    always_set_home
+        |Defaults    env_reset
+        |Defaults    env_keep = "COLORS DISPLAY HOSTNAME HISTSIZE INPUTRC KDEDIR LS_COLORS MAIL PS1 PS2 QTDIR USERNAME LANG LC_ADDRESS LC_CTYPE LC_COLLATE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY"
+        |Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/bin
+        |root  ALL=(ALL)   ALL
+        |## Read drop-in files from /etc/sudoers.d (the # here does not mean a comment)
+        |#includedir /etc/sudoers.d
+      END
+      # rubocop:enable LineLength
+
+      it do
+        is_expected.to contain_file('/etc/sudoers').only_with(
+          {
+            'owner'   => 'root',
+            'group'   => 'root',
+            'mode'    => '0440',
+            'content' => content_sudoers
+          },
+        )
+      end
+
+      it do
+        is_expected.to contain_file('/etc/sudoers.d').only_with(
+          {
+            'ensure'  => 'directory',
+            'owner'   => 'root',
+            'group'   => 'root',
+            'mode'    => '0750',
+            'recurse' => true,
+            'purge'   => true,
+          },
+        )
+      end
+    end
+  end
+
+  # The following tests are OS independent, so we only test one supported OS
+  redhat = {
+    supported_os: [
+      {
+        'operatingsystem'        => 'RedHat',
+        'operatingsystemrelease' => ['7'],
+      },
+    ],
   }
 
-  let(:facts) { default_facts }
+  on_supported_os(redhat).each do |os, os_facts|
+    let(:facts) { os_facts }
 
-  context 'with class default options' do
-    it do
-      is_expected.to contain_package('sudo-package').with(
-        {
-          'ensure' => 'present',
-          'name'   => 'sudo',
-        },
-      )
-      is_expected.to contain_file('/etc/sudoers.d').with(
-        {
-          'ensure'  => 'directory',
-          'owner'   => 'root',
-          'group'   => 'root',
-          'mode'    => '0750',
-          'recurse' => 'true',
-          'purge'   => 'true',
-        },
-      )
-      is_expected.to contain_file('/etc/sudoers').with(
-        {
-          'owner' => 'root',
-          'group' => 'root',
-          'mode'  => '0440',
-        },
-      )
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    requiretty$})
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    !visiblepw$})
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    always_set_home$})
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    env_reset$})
-      # rubocop:disable LineLength
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    env_keep = "COLORS DISPLAY HOSTNAME HISTSIZE INPUTRC KDEDIR LS_COLORS MAIL PS1 PS2 QTDIR USERNAME LANG LC_ADDRESS LC_CTYPE LC_COLLATE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE LC_TIME LC_ALL LANGUAGE LINGUAS _XKB_CHARSET XAUTHORITY"$})
-      # rubocop:enable LineLength
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    secure_path = \/sbin:\/bin:\/usr\/sbin:\/usr\/bin$})
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^root  ALL=\(ALL\)   ALL$})
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^#includedir \/etc\/sudoers.d$})
-      is_expected.not_to contain_file('/etc/sudoers').with_content(%r{^Defaults    always_query_group_plugin$})
-    end
-  end
+    describe "on #{os} with package set to valid string" do
+      let(:params) { { package: 'unittest' } }
 
-  context 'with all options set and manage all resources' do
-    let(:params) do
-      {
-        package:              'package',
-        package_ensure:       'absent',
-        package_source:       '/file',
-        package_adminfile:    '/adminfile',
-        package_manage:       true,
-        config_dir:           '/folder',
-        config_dir_ensure:    'absent',
-        config_dir_mode:      '0550',
-        config_dir_group:     'bar',
-        config_dir_purge:     false,
-        sudoers_manage:       true,
-        sudoers:              { 'root' => { 'content' => 'root ALL=(ALL) ALL' }, 'webusers' => { 'priority' => 20, 'source' => 'puppet:///files/webusers' } },
-        config_file:          '/sudoers/file',
-        config_file_group:    'group',
-        config_file_owner:    'owner',
-        config_file_mode:     '1555',
-        requiretty:           false,
-        visiblepw:            true,
-        always_set_home:      false,
-        envreset:             false,
-        envkeep:              ['VARIABLE'],
-        secure_path:          '/folder',
-        root_allow_all:       false,
-        includedir:           false,
-        include_libsudo_vas:  true,
-        libsudo_vas_location: '/folder/file.so',
-      }
+      it { is_expected.to contain_package('sudo-package').with_name('unittest') }
     end
 
-    it do
-      is_expected.to contain_package('sudo-package').with(
-        {
-          'ensure'    => 'absent',
-          'name'      => 'package',
-          'source'    => '/file',
-          'adminfile' => '/adminfile',
-        },
-      )
-      is_expected.to contain_file('/folder').with(
-        {
-          'ensure'  => 'absent',
-          'owner'   => 'root',
-          'group'   => 'bar',
-          'mode'    => '0550',
-          'recurse' => 'false',
-          'purge'   => 'false',
-        },
-      )
-      is_expected.to contain_file('10_root').with(
-        {
-          'ensure'  => 'present',
-          'path'    => '/folder/10_root',
-          'owner'   => 'root',
-          'group'   => 'bar',
-          'mode'    => '0440',
-          'content' => "root ALL=(ALL) ALL\n",
-        },
-      )
-      is_expected.to contain_file('20_webusers').with(
-        {
-          'ensure' => 'present',
-          'path'   => '/folder/20_webusers',
-          'owner'  => 'root',
-          'group'  => 'bar',
-          'mode'   => '0440',
-          'source' => 'puppet:///files/webusers',
-        },
-      )
-      is_expected.to contain_file('/sudoers/file').with(
-        {
-          'owner' => 'owner',
-          'group' => 'group',
-          'mode'  => '1555',
-        },
-      )
-      is_expected.to contain_file('/sudoers/file').with_content(%r{^Defaults    !requiretty$})
-      is_expected.to contain_file('/sudoers/file').with_content(%r{^Defaults    visiblepw$})
-      is_expected.to contain_file('/sudoers/file').with_content(%r{^Defaults    !always_set_home$})
-      is_expected.to contain_file('/sudoers/file').with_content(%r{^Defaults    !env_reset$})
-      is_expected.to contain_file('/sudoers/file').with_content(%r{^Defaults    env_keep = \"VARIABLE\"$})
-      is_expected.to contain_file('/sudoers/file').with_content(%r{^Defaults    secure_path = \/folder$})
-      is_expected.not_to contain_file('/sudoers/file').with_content(%r{^root  ALL=\(ALL\)   ALL\n$})
-      is_expected.not_to contain_file('/sudoers/file').with_content(%r{^#includedir \/folder$})
-      is_expected.to contain_file('/sudoers/file').with_content(%r{^Defaults    group_plugin=\"\/folder\/file.so\"$})
-    end
-  end
+    describe "on #{os} with package_source set to valid string" do
+      let(:params) { { package_source: 'unittest' } }
 
-  context 'with default options and package_manage false' do
-    let(:params) { { package_manage: false } }
-
-    it do
-      is_expected.to contain_file('/etc/sudoers.d').with(
-        {
-          'ensure'  => 'directory',
-          'owner'   => 'root',
-          'group'   => 'root',
-          'mode'    => '0750',
-          'recurse' => 'true',
-          'purge'   => 'true',
-        },
-      )
-      is_expected.to contain_file('/etc/sudoers').with(
-        {
-          'owner'   => 'root',
-          'group'   => 'root',
-          'mode'    => '0440',
-        },
-      )
-      is_expected.not_to contain_package('sudo-package')
-    end
-  end
-
-  context 'with default options and sudoers_manage false' do
-    let(:params) { { sudoers_manage: false } }
-
-    it do
-      is_expected.to contain_package('sudo-package').with(
-        {
-          'ensure' => 'present',
-          'name'   => 'sudo',
-        },
-      )
-      is_expected.not_to contain_file('/etc/sudoers.d')
-      is_expected.not_to contain_file('/etc/sudoers')
-    end
-  end
-
-  context 'with sudoers_manage and package_manage false and with sudoers hash' do
-    let(:params) do
-      {
-        sudoers:        { 'root' => { 'content' => 'root ALL=(ALL) ALL' }, 'webusers' => { 'priority' => '20', 'source' => 'puppet:///files/webusers' } },
-        sudoers_manage: false,
-        package_manage: false,
-      }
+      it { is_expected.to contain_package('sudo-package').with_source('unittest') }
     end
 
-    it do
-      is_expected.not_to contain_package('sudo-package')
-      is_expected.not_to contain_file('/etc/sudoers.d')
-      is_expected.not_to contain_file('/etc/sudoers')
-      is_expected.not_to contain_file('10_root')
-      is_expected.not_to contain_file('20_webusers')
-    end
-  end
+    describe "on #{os} with package_ensure set to valid string" do
+      let(:params) { { package_ensure: 'absent' } }
 
-  context 'with default options and include_libsudo_vas set to true on Linux x86_64' do
-    let(:params) { { include_libsudo_vas: true } }
-
-    it do
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    group_plugin=\"\/opt\/quest\/lib64\/libsudo_vas.so\"$})
-    end
-  end
-
-  context 'with default options and include_libsudo_vas set to true on Linux amd64' do
-    let :facts do
-      default_facts.merge(
-        {
-          os: {
-            architecture: 'amd64',
-          },
-        },
-      )
+      it { is_expected.to contain_package('sudo-package').with_ensure('absent') }
     end
 
-    let(:params) { { include_libsudo_vas: true } }
+    describe "on #{os} with package_manage set to valid false" do
+      let(:params) { { package_manage: false } }
 
-    it do
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    group_plugin=\"\/opt\/quest\/lib64\/libsudo_vas.so\"$})
-    end
-  end
-
-  context 'with default options and include_libsudo_vas set to true on Linux i686' do
-    let :facts do
-      default_facts.merge(
-        {
-          os: {
-            architecture: 'i686',
-          },
-        },
-      )
+      it { is_expected.not_to contain_package('sudo-package') }
     end
 
-    let(:params) { { include_libsudo_vas: true } }
+    describe "on #{os} with package_adminfile set to valid string" do
+      let(:params) { { package_adminfile: '/unit/test' } }
 
-    it do
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so\"$})
-    end
-  end
-
-  context 'with default options and include_libsudo_vas set to true on SunOS sun4v' do
-    let :facts do
-      default_facts.merge(
-        {
-          os: {
-            architecture: 'sun4v',
-          },
-        },
-      )
+      it { is_expected.to contain_package('sudo-package').with_adminfile('/unit/test') }
     end
 
-    let(:params) { { include_libsudo_vas: true } }
+    describe "on #{os} with config_dir set to valid string" do
+      let(:params) { { config_dir: '/unit/test' } }
 
-    it do
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so\"$})
-    end
-  end
-
-  context 'with default options and include_libsudo_vas set to true on SunOS i86pc' do
-    let :facts do
-      default_facts.merge(
-        {
-          os: {
-            architecture: 'i86pc',
-          },
-        },
-      )
+      it { is_expected.to contain_file('/unit/test') }
+      it { is_expected.to contain_file('/etc/sudoers').with_content(%r{#includedir \/unit\/test}) }
     end
 
-    let(:params) { { include_libsudo_vas: true } }
+    describe "on #{os} with config_dir_group set to valid string" do
+      let(:params) { { config_dir_group: 'unittest' } }
 
-    it do
-      is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    group_plugin=\"\/opt\/quest\/lib\/libsudo_vas.so\"$})
-    end
-  end
-
-  describe 'with always query_group_plugin' do
-    context 'using module default and sudo_version returns 1.8.15' do
-      let(:facts) { default_facts.merge(sudo_version: '1.8.15') }
-
-      it do
-        is_expected.not_to contain_file('/etc/sudoers').with_content(%r{^Defaults    always_query_group_plugin$})
-      end
+      it { is_expected.to contain_file('/etc/sudoers.d').with_group('unittest') }
     end
 
-    context 'using module default with include_libsudo_vas set to true and sudo_version returns 1.8.6' do
-      it do
-        is_expected.not_to contain_file('/etc/sudoers').with_content(%r{^Defaults    always_query_group_plugin$})
-      end
+    describe "on #{os} with config_dir_mode set to valid octet" do
+      let(:params) { { config_dir_mode: '0242' } }
+
+      it { is_expected.to contain_file('/etc/sudoers.d').with_mode('0242') }
     end
 
-    context 'using module default with include_libsudo_vas set to true and sudo_version returns 1.8.15' do
-      let(:facts) { default_facts.merge(sudo_version: '1.8.15') }
+    describe "on #{os} with config_dir_ensure set to valid string" do
+      let(:params) { { config_dir_ensure: 'link' } }
+
+      it { is_expected.to contain_file('/etc/sudoers.d').with_ensure('link') }
+    end
+
+    describe "on #{os} with config_dir_purge set to valid hash" do
+      let(:params) { { config_dir_purge: false } }
+
+      it { is_expected.to contain_file('/etc/sudoers.d').with_purge(false) }
+      it { is_expected.to contain_file('/etc/sudoers.d').with_recurse(false) }
+    end
+
+    describe "on #{os} with sudoers set to valid string" do
+      let(:params) { { sudoers: { 'unit' => { 'content' => 'root ALL=(ALL) ALL' }, 'test' => { 'priority' => 20, 'source' => 'puppet:///unit/test' } } } }
+
+      it { is_expected.to have_sudo__fragment_resource_count(2) }
+      it { is_expected.to contain_sudo__fragment('unit').with_content('root ALL=(ALL) ALL') }
+      it { is_expected.to contain_sudo__fragment('test').with_priority(20) }
+      it { is_expected.to contain_sudo__fragment('test').with_source('puppet:///unit/test') }
+      it { is_expected.to contain_file('10_unit') } # only needed for 100% resource coverage
+      it { is_expected.to contain_file('20_test') } # only needed for 100% resource coverage
+    end
+
+    describe "on #{os} with sudoers_manage set to valid false" do
+      let(:params) { { sudoers_manage: false } }
+
+      it { is_expected.not_to contain_file('/etc/sudoers') }
+      it { is_expected.not_to contain_file('/etc/sudoers.d') }
+      it { is_expected.to have_sudo__fragment_resource_count(0) }
+    end
+
+    describe "on #{os} with config_file set to valid string" do
+      let(:params) { { config_file: '/unit/test' } }
+
+      it { is_expected.to contain_file('/unit/test') }
+    end
+
+    describe "on #{os} with config_file_group set to valid string" do
+      let(:params) { { config_file_group: 'unittest' } }
+
+      it { is_expected.to contain_file('/etc/sudoers').with_group('unittest') }
+    end
+
+    describe "on #{os} with config_file_owner set to valid string" do
+      let(:params) { { config_file_owner: 'unittest' } }
+
+      it { is_expected.to contain_file('/etc/sudoers').with_owner('unittest') }
+    end
+
+    describe "on #{os} with config_file_mode set to valid octet" do
+      let(:params) { { config_file_mode: '0242' } }
+
+      it { is_expected.to contain_file('/etc/sudoers').with_mode('0242') }
+    end
+
+    describe "on #{os} with requiretty set to valid false" do
+      let(:params) { { requiretty: false } }
+
+      it { is_expected.to contain_file('/etc/sudoers').with_content(%r{Defaults    !requiretty}) }
+    end
+
+    describe "on #{os} with visiblepw set to valid true" do
+      let(:params) { { visiblepw: true } }
+
+      it { is_expected.to contain_file('/etc/sudoers').with_content(%r{Defaults    visiblepw}) }
+    end
+
+    describe "on #{os} with always_set_home set to valid false" do
+      let(:params) { { always_set_home: false } }
+
+      it { is_expected.to contain_file('/etc/sudoers').with_content(%r{Defaults    !always_set_home}) }
+    end
+
+    describe "on #{os} with envreset set to valid false" do
+      let(:params) { { envreset: false } }
+
+      it { is_expected.to contain_file('/etc/sudoers').with_content(%r{Defaults    !env_reset}) }
+    end
+
+    describe "on #{os} with envkeep set to valid array" do
+      let(:params) { { envkeep: ['UNIT', 'TEST'] } }
+
+      it { is_expected.to contain_file('/etc/sudoers').with_content(%r{Defaults    env_keep = \"UNIT TEST\"}) }
+    end
+
+    describe "on #{os} with secure_path set to valid string" do
+      let(:params) { { secure_path: '/unit:/test' } }
+
+      it { is_expected.to contain_file('/etc/sudoers').with_content(%r{Defaults    secure_path = \/unit:\/test}) }
+    end
+
+    describe "on #{os} with root_allow_all set to valid false" do
+      let(:params) { { root_allow_all: false } }
+
+      it { is_expected.to contain_file('/etc/sudoers').without_content(%r{root  ALL=(ALL)   ALL}) }
+    end
+
+    describe "on #{os} with includedir set to valid false" do
+      let(:params) { { includedir: false } }
+
+      it { is_expected.to contain_file('/etc/sudoers').without_content(%r{#includedir}) }
+    end
+
+    describe "on #{os} with include_libsudo_vas set to valid true" do
       let(:params) { { include_libsudo_vas: true } }
 
-      it do
-        is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    always_query_group_plugin$})
-      end
+      it { is_expected.to contain_file('/etc/sudoers').with_content(%r{Defaults    group_plugin=\"\/opt\/quest\/lib64\/libsudo_vas.so\"}) }
     end
 
-    context 'set to true' do
+    describe "on #{os} with libsudo_vas_location set to valid absolute path when include_libsudo_vas is true" do
+      let(:params) { { libsudo_vas_location: '/unit/test', include_libsudo_vas: true } }
+
+      it { is_expected.to contain_file('/etc/sudoers').with_content(%r{Defaults    group_plugin=\"\/unit\/test\"}) }
+    end
+
+    describe "on #{os} with libsudo_vas_location set to valid absolute path when include_libsudo_vas is false" do
+      let(:params) { { libsudo_vas_location: '/unit/test', include_libsudo_vas: false } }
+
+      it { is_expected.to contain_file('/etc/sudoers').without_content(%r{Defaults    group_plugin=}) }
+    end
+
+    describe "on #{os} with always_query_group_plugin set to valid true" do
       let(:params) { { always_query_group_plugin: true } }
 
-      it do
-        is_expected.to contain_file('/etc/sudoers').with_content(%r{^Defaults    always_query_group_plugin$})
-      end
-    end
-  end
-
-  context 'with specifying package_manage param set to invalid value' do
-    let(:params) { { package_manage: [ 'true' ] } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Boolean})
-    end
-  end
-
-  context 'with specifying sudoers_manage param set to invalid value' do
-    let(:params) { { sudoers_manage: 'foo' } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Boolean})
-    end
-  end
-
-  context 'with specifying config_dir_purge set to invalid value' do
-    let(:params) { { config_dir_purge: 'invalid' } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Boolean})
-    end
-  end
-
-  context 'with specifying config_dir set to invalid value' do
-    let(:params) { { config_dir: 'invalidpath' } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Stdlib::Absolutepath})
-    end
-  end
-
-  context 'with specifying config_file param set to invalid value' do
-    let(:params) { { config_file: 'invalidpath' } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Stdlib::Absolutepath})
-    end
-  end
-
-  context 'with specifying adminfile param set to invalid value' do
-    let(:params) { { package_adminfile: 'invalidpath' } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Stdlib::Absolutepath})
-    end
-  end
-
-  context 'with specifying sudoers hash set to invalid value' do
-    let(:params) { { sudoers: [ 'not_a_hash' ] } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a value of type Undef or Hash})
-    end
-  end
-
-  context 'with specifying requiretty set to invalid value' do
-    let(:params) { { requiretty: [ 'not_a_bool' ] } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Boolean})
-    end
-  end
-
-  context 'with specifying visiblepw set to invalid value' do
-    let(:params) { { visiblepw: [ 'not_a_bool' ] } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Boolean})
-    end
-  end
-
-  context 'with specifying always_set_home set to invalid value' do
-    let(:params) { { always_set_home: [ 'not_a_bool' ] } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Boolean})
-    end
-  end
-
-  context 'with specifying envreset set to invalid value' do
-    let(:params) { { envreset: [ 'not_a_bool' ] } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Boolean})
-    end
-  end
-
-  context 'with specifying envkeep set to invalid value' do
-    let(:params) { { envkeep: false } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects an Array})
-    end
-  end
-
-  context 'with specifying secure_path set to invalid value' do
-    let(:params) { { secure_path: [ 'not_a_string' ] } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a String })
-    end
-  end
-
-  context 'with specifying root_allow_all set to invalid value' do
-    let(:params) { { root_allow_all: [ 'not_a_bool' ] } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Boolean})
-    end
-  end
-
-  context 'with specifying includedir to invalid value' do
-    let(:params) { { includedir: [ 'not_a_bool' ] } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Boolean})
-    end
-  end
-
-  context 'with specifying include_libsudo_vas to invalid value' do
-    let(:params) { { include_libsudo_vas: [ 'not_a_bool' ] } }
-
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Boolean})
-    end
-  end
-
-  context 'with specifying libsudo_vas_location to invalid value' do
-    let(:params) do
-      {
-        libsudo_vas_location: [ 'not_an_absolute_path' ],
-        include_libsudo_vas:  true,
-      }
+      it { is_expected.to contain_file('/etc/sudoers').with_content(%r{Defaults    always_query_group_plugin}) }
     end
 
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Stdlib::Absolutepath})
+    describe "on #{os} with always_query_group_plugin set to valid false" do
+      let(:params) { { always_query_group_plugin: false } }
+
+      it { is_expected.to contain_file('/etc/sudoers').without_content(%r{Defaults    always_query_group_plugin}) }
     end
-  end
 
-  context 'with specifying hiera_merge_sudoers to invalid value' do
-    let(:params) { { hiera_merge_sudoers: 'invalid' } }
+    describe "on #{os} with include_libsudo_vas set to valid true and sudo_version fact is >= 1.8.15" do
+      let(:params) { { include_libsudo_vas: true } }
+      let(:facts) { os_facts.merge({ sudo_version: '1.8.15' }) }
 
-    it do
-      expect {
-        is_expected.to contain_class('sudo')
-      }.to raise_error(Puppet::Error, %r{expects a Boolean})
+      it { is_expected.to contain_file('/etc/sudoers').with_content(%r{Defaults    always_query_group_plugin}) }
+    end
+
+    describe "on #{os} with include_libsudo_vas set to valid true and sudo_version fact is < 1.8.15" do
+      let(:params) { { include_libsudo_vas: true } }
+      let(:facts) { os_facts.merge({ sudo_version: '1.8.14' }) }
+
+      it { is_expected.to contain_file('/etc/sudoers').without_content(%r{Defaults    always_query_group_plugin}) }
     end
   end
 end
