@@ -121,9 +121,9 @@ describe 'sudo', type: :class do
     end
 
     describe "on #{os} with config_dir_ensure set to valid string" do
-      let(:params) { { config_dir_ensure: 'link' } }
+      let(:params) { { config_dir_ensure: 'absent' } }
 
-      it { is_expected.to contain_file('/etc/sudoers.d').with_ensure('link') }
+      it { is_expected.to contain_file('/etc/sudoers.d').with_ensure('absent') }
     end
 
     describe "on #{os} with config_dir_purge set to valid hash" do

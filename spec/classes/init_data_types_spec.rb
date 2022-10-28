@@ -34,9 +34,9 @@ describe 'sudo', type: :class do
           invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
           message: 'expects a match for Enum',
         },
-        'Enum[present, absent, directory, link]' => {
+        'Enum[present, absent, directory]' => {
           name:    ['config_dir_ensure'],
-          valid:   ['present', 'absent', 'directory', 'link'],
+          valid:   ['present', 'absent', 'directory'],
           invalid: [['array'], { 'ha' => 'sh' }, 3, 2.42, false],
           message: 'expects a match for Enum',
         },
