@@ -93,9 +93,6 @@
 #   This option is automatically enabled if include_libsudo_vas is set to true and
 #   $::sudo_version => 1.8.15.
 #
-# @param hiera_merge_sudoers
-#   TODO: missing documentation
-#
 class sudo (
   String[1]                                      $package                   = 'sudo',
   Optional[String[1]]                            $package_source            = undef,
@@ -124,7 +121,6 @@ class sudo (
   Boolean                                        $include_libsudo_vas       = false,
   Stdlib::Absolutepath                           $libsudo_vas_location      = '/opt/quest/lib64/libsudo_vas.so',
   Optional[Boolean]                              $always_query_group_plugin = undef,
-  Boolean                                        $hiera_merge_sudoers       = false,
 ) {
   # Sudo 1.8.15 introduced a new Defaults option 'always_query_group_plugin'.
   # This option is required in >= 1.8.15 if you want sudo to automatically do
@@ -165,13 +161,6 @@ class sudo (
     }
 
     # Only works with sudo >= 1.7.2
-    if $sudoers != undef {
-      if $hiera_merge_sudoers {
-        $sudoers_real = hiera_hash(sudo::sudoers)
-      } else {
-        $sudoers_real = $sudoers
-      }
-      create_resources('sudo::fragment',$sudoers_real)
-    }
+    create_resources('sudo::fragment',$sudoers)
   }
 }

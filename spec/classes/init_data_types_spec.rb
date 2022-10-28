@@ -28,12 +28,6 @@ describe 'sudo', type: :class do
           invalid: ['false', 'string', ['array'], { 'ha' => 'sh' }, 3, 2.42],
           message: 'expects a Boolean value',
         },
-        'Boolean (hiera_merge_sudoers)' => {
-          name:    ['hiera_merge_sudoers'],
-          valid:   [], # see init_hiera_merge_spec.rb
-          invalid: ['false', 'string', ['array'], { 'ha' => 'sh' }, 3, 2.42],
-          message: 'expects a Boolean value',
-        },
         'Enum[present, absent]' => {
           name:    ['package_ensure'],
           valid:   ['present', 'absent'],

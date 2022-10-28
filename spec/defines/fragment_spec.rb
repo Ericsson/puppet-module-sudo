@@ -35,10 +35,10 @@ describe 'sudo::fragment', type: :define do
       it { is_expected.to contain_file('10_testing').with_ensure('absent') }
     end
 
-    describe "on #{os} with priority set to valid integer <3>" do
-      let(:params) { { priority: 3 } }
+    describe "on #{os} with priority set to valid integer <20>" do
+      let(:params) { { priority: 20 } }
 
-      it { is_expected.to contain_file('3_testing') }
+      it { is_expected.to contain_file('20_testing') }
     end
 
     describe "on #{os} with content set to valid string <testing>" do

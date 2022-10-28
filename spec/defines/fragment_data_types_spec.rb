@@ -1,6 +1,6 @@
 require 'spec_helper'
 describe 'sudo::fragment', type: :define do
-  let(:title) { 'test' }
+  let(:title) { 'testing' }
   let(:pre_condition) do
     'include sudo'
   end
