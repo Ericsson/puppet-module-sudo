@@ -1,0 +1,6 @@
+---
+sudo::sudoers:
+  unittest1:
+    priority: 10
+  unittest2:
+    priority: 20

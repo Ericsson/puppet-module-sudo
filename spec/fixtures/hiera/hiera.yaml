@@ -1,0 +1,9 @@
+---
+:backends:
+  - yaml
+:yaml:
+  :datadir: 'spec/fixtures/hiera'
+:hierarchy:
+  - unittest/%{unittest}
+  - fqdn/%{fqdn}
+  - class/%{class}

@@ -1,24 +1,24 @@
 # This file is being maintained by Puppet.
 # DO NOT EDIT
 
-Defaults    <% unless @requiretty_real -%><%= "!" %><% end -%>requiretty
-Defaults    <% unless @visiblepw_real -%><%= "!" %><% end -%>visiblepw
-Defaults    <% unless @always_set_home_real -%><%= "!" %><% end -%>always_set_home
-Defaults    <% unless @envreset_real -%><%= "!" %><% end -%>env_reset
+Defaults    <% unless @requiretty -%><%= "!" %><% end -%>requiretty
+Defaults    <% unless @visiblepw -%><%= "!" %><% end -%>visiblepw
+Defaults    <% unless @always_set_home -%><%= "!" %><% end -%>always_set_home
+Defaults    <% unless @envreset -%><%= "!" %><% end -%>env_reset
 <% if @envkeep -%>
 Defaults    env_keep = "<%= @envkeep.join(" ") %>"
 <% end -%>
 Defaults    secure_path = <%= @secure_path %>
-<% if @include_libsudo_vas_real -%>
-Defaults    group_plugin="<%= @libsudo_vas_location_real %>"
+<% if @include_libsudo_vas -%>
+Defaults    group_plugin="<%= @libsudo_vas_location %>"
 <% end -%>
 <% if @always_query_group_plugin_real -%>
 Defaults    always_query_group_plugin
 <% end -%>
-<% if @root_allow_all_real -%>
+<% if @root_allow_all -%>
 root  ALL=(ALL)   ALL
 <% end -%>
-<% if @includedir_real -%>
+<% if @includedir -%>
 ## Read drop-in files from /etc/sudoers.d (the # here does not mean a comment)
 #includedir <%= @config_dir %>
 <% end -%>

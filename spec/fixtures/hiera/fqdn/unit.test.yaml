@@ -1,0 +1,9 @@
+---
+sudo::sudoers:
+  unittest2:
+    priority: 20
+  unittest3:
+    priority: 30
+  # only needed for 100% resource coverage
+  test:
+    priority: 10

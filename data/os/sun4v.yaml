@@ -1,0 +1,2 @@
+---
+sudo::libsudo_vas_location: '/opt/quest/lib/libsudo_vas.so'
