@@ -89,11 +89,11 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 3.1.0 < 7.0.0"
+      "version_requirement": ">= 3.1.0 < 9.0.0"
     }
   ],
   "description": "manage sudo with ability to not manage package or sudoers file",
-  "pdk-version": "2.5.0",
-  "template-url": "pdk-default#2.5.0",
-  "template-ref": "tags/2.5.0-0-g369d483"
+  "pdk-version": "3.0.0",
+  "template-url": "pdk-default#3.0.0",
+  "template-ref": "tags/3.0.0-0-g056e50d"
 }
