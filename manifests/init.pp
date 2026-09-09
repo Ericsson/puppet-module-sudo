@@ -161,6 +161,10 @@ class sudo (
     }
 
     # Only works with sudo >= 1.7.2
-    create_resources('sudo::fragment',$sudoers)
+    $sudoers.each |$sudoers_name, $sudoers_params| {
+      sudo::fragment { $sudoers_name:
+        * => $sudoers_params,
+      }
+    }
   }
 }
