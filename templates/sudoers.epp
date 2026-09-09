@@ -1,0 +1,37 @@
+<%- | Boolean              $requiretty,
+      Boolean              $visiblepw,
+      Boolean              $always_set_home,
+      Boolean              $envreset,
+      Array                $envkeep,
+      String[1]            $secure_path,
+      Boolean              $include_libsudo_vas,
+      Stdlib::Absolutepath $libsudo_vas_location,
+      Boolean              $always_query_group_plugin_real,
+      Boolean              $root_allow_all,
+      Boolean              $includedir,
+      Stdlib::Absolutepath $config_dir,
+| -%>
+# This file is being maintained by Puppet.
+# DO NOT EDIT
+
+Defaults    <% unless $requiretty { %>!<% } %>requiretty
+Defaults    <% unless $visiblepw { %>!<% } %>visiblepw
+Defaults    <% unless $always_set_home { %>!<% } %>always_set_home
+Defaults    <% unless $envreset { %>!<% } %>env_reset
+<% if $envkeep { -%>
+Defaults    env_keep = "<%= $envkeep.join(' ') %>"
+<% } -%>
+Defaults    secure_path = <%= $secure_path %>
+<% if $include_libsudo_vas { -%>
+Defaults    group_plugin="<%= $libsudo_vas_location %>"
+<% } -%>
+<% if $always_query_group_plugin_real { -%>
+Defaults    always_query_group_plugin
+<% } -%>
+<% if $root_allow_all { -%>
+root  ALL=(ALL)   ALL
+<% } -%>
+<% if $includedir { -%>
+## Read drop-in files from /etc/sudoers.d (the # here does not mean a comment)
+#includedir <%= $config_dir %>
+<% } -%>

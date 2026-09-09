@@ -149,7 +149,20 @@ class sudo (
       owner   => $config_file_owner,
       group   => $config_file_group,
       mode    => $config_file_mode,
-      content => template('sudo/sudoers.erb'),
+      content => epp('sudo/sudoers.epp', {
+          'requiretty'                     => $requiretty,
+          'visiblepw'                      => $visiblepw,
+          'always_set_home'                => $always_set_home,
+          'envreset'                       => $envreset,
+          'envkeep'                        => $envkeep,
+          'secure_path'                    => $secure_path,
+          'include_libsudo_vas'            => $include_libsudo_vas,
+          'libsudo_vas_location'           => $libsudo_vas_location,
+          'always_query_group_plugin_real' => $always_query_group_plugin_real,
+          'root_allow_all'                 => $root_allow_all,
+          'includedir'                     => $includedir,
+          'config_dir'                     => $config_dir,
+      }),
     }
     file { $config_dir:
       ensure  => $config_dir_ensure,
