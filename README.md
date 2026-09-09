@@ -20,9 +20,13 @@ version 8 with the Ruby version associated with that release.
 
  * Debian 11
  * Debian 12
- * EL 7
- * EL 8
- * EL 9
+ * RedHat 7
+ * RedHat 8
+ * RedHat 9
+ * RedHat 10
+ * Rocky 8
+ * Rocky 9
+ * Rocky 10
  * SLES 12
  * SLES 15
  * Ubuntu 20.04 LTS
