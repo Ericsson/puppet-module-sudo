@@ -1,4 +1,4 @@
-# Define to manage configuration files in /etc/sudoers.d/
+# @summary Manage a configuration file fragment in /etc/sudoers.d/
 #
 # @param ensure
 #   Ensure attribute of the file created in $config_dir.

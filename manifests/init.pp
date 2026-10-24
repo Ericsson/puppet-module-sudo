@@ -1,4 +1,4 @@
-# Manage sudo package and configuration files in /etc/sudoers.d/
+# @summary Manage sudo package and configuration files in /etc/sudoers.d/
 #
 # @param package
 #   Package to be installed. Accept string or array.
@@ -70,10 +70,10 @@
 #   Enable sudo rule in sudoers file for root to get full access.
 #
 # @param includedir
-#   Enable inclusion of fragments directory in sudoers file. Requires sudo >= 1.7.2.
+#   Enable inclusion of fragments directory in sudoers file.
 #
 # @param include_libsudo_vas
-#   Enable inclusion of libsudo_vas plugin. Requires sudo >= 1.8.
+#   Enable inclusion of libsudo_vas plugin.
 #
 # @param libsudo_vas_location
 #   Location of libsudo_vas plugin
@@ -91,7 +91,7 @@
 #   </pre>
 #
 #   This option is automatically enabled if include_libsudo_vas is set to true and
-#   $::sudo_version => 1.8.15.
+#   $facts['sudo_version'] >= 1.8.15.
 #
 class sudo (
   String[1]                              $package                   = 'sudo',
@@ -173,7 +173,6 @@ class sudo (
       purge   => $config_dir_purge,
     }
 
-    # Only works with sudo >= 1.7.2
     $sudoers.each |$sudoers_name, $sudoers_params| {
       sudo::fragment { $sudoers_name:
         * => $sudoers_params,
