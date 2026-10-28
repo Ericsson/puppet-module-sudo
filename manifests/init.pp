@@ -1,4 +1,4 @@
-# Manage sudo package and configuration files in /etc/sudoers.d/
+# @summary Manage sudo package and configuration files in /etc/sudoers.d/
 #
 # @param package
 #   Package to be installed. Accept string or array.
@@ -70,10 +70,10 @@
 #   Enable sudo rule in sudoers file for root to get full access.
 #
 # @param includedir
-#   Enable inclusion of fragments directory in sudoers file. Requires sudo >= 1.7.2.
+#   Enable inclusion of fragments directory in sudoers file.
 #
 # @param include_libsudo_vas
-#   Enable inclusion of libsudo_vas plugin. Requires sudo >= 1.8.
+#   Enable inclusion of libsudo_vas plugin.
 #
 # @param libsudo_vas_location
 #   Location of libsudo_vas plugin
@@ -91,7 +91,7 @@
 #   </pre>
 #
 #   This option is automatically enabled if include_libsudo_vas is set to true and
-#   $::sudo_version => 1.8.15.
+#   $facts['sudo_version'] >= 1.8.15.
 #
 class sudo (
   String[1]                              $package                   = 'sudo',
@@ -149,7 +149,20 @@ class sudo (
       owner   => $config_file_owner,
       group   => $config_file_group,
       mode    => $config_file_mode,
-      content => template('sudo/sudoers.erb'),
+      content => epp('sudo/sudoers.epp', {
+          'requiretty'                     => $requiretty,
+          'visiblepw'                      => $visiblepw,
+          'always_set_home'                => $always_set_home,
+          'envreset'                       => $envreset,
+          'envkeep'                        => $envkeep,
+          'secure_path'                    => $secure_path,
+          'include_libsudo_vas'            => $include_libsudo_vas,
+          'libsudo_vas_location'           => $libsudo_vas_location,
+          'always_query_group_plugin_real' => $always_query_group_plugin_real,
+          'root_allow_all'                 => $root_allow_all,
+          'includedir'                     => $includedir,
+          'config_dir'                     => $config_dir,
+      }),
     }
     file { $config_dir:
       ensure  => $config_dir_ensure,
@@ -160,7 +173,10 @@ class sudo (
       purge   => $config_dir_purge,
     }
 
-    # Only works with sudo >= 1.7.2
-    create_resources('sudo::fragment',$sudoers)
+    $sudoers.each |$sudoers_name, $sudoers_params| {
+      sudo::fragment { $sudoers_name:
+        * => $sudoers_params,
+      }
+    }
   }
 }
